@@ -63,3 +63,8 @@ function svndiff {
 if [ -e ~/.zshrc.local ]; then
     . ~/.zshrc.local
 fi
+
+if [ -e ~/.zshrc.local.$(hostname) ]; then
+    . ~/.zshrc.local.$(hostname)
+fi
+

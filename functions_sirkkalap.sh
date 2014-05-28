@@ -10,6 +10,9 @@
 # of these stupid colon-delimited strings, none of this would be
 # necessary. I wonder if there's a Python-based shell out there...)
 
+# Include guard from: https://coderwall.com/p/it3b-q
+[ -n "$_LIB_FUNCTIONS_SIRKKALAP" ] && return || readonly _LIB_FUNCTIONS_SIRKKALAP=1
+
 # add to end of path
 append_path()
 {

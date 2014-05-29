@@ -1,5 +1,5 @@
-dotfiles
-========
+dotfiles-sirkkalap
+==================
 
 Some dot-files mainly for me.
 

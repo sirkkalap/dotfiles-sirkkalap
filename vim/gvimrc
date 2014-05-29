@@ -1,0 +1,5 @@
+set go-=T
+set guioptions-=r
+set guioptions-=L
+set guitablabel=[%N]\ %t\ %M
+set guifont=Menlo\ For\ Powerline

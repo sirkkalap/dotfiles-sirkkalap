@@ -1,0 +1,77 @@
+" Automaattista wrapin tunnistausta
+set wrap
+set formatoptions=qrn1
+set textwidth=79
+set colorcolumn=85
+
+" Settings for VimClojure
+let vimclojure#HighlightBuiltins=1
+let vimclojure#ParenRainbow=1
+set smartindent
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set background=dark
+set gdefault
+colorscheme solarized
+autocmd BufWritePre * :%s/\s\+$//e
+
+let g:Powerline_symbols = 'fancy'
+map // :nohlsearch <Esc>
+filetype plugin on
+
+" switching to buffer 1 - 9 is mapped to ,[nOfBuffer]
+for buffer_no in range(1, 9)
+  execute "nmap <Leader>" . buffer_no . " :b" . buffer_no . "\<CR>"
+endfor
+
+" poista cursorline
+" set cursorline!
+
+" switching to buffer 10 - 100 is mapped to ,0[nOfBuffer]
+for buffer_no in range(10, 100)
+  execute "nmap <Leader>j" . buffer_no . " :b" . buffer_no . "\<CR>"
+endfor
+
+" vim-javascript
+let g:html_indent_inctags = "html,body,head,tbody"
+let g:html_indent_script1 = "inc"
+let g:html_indent_style1 = "inc"
+
+" TAB säädöt
+map  <C-n> :tabnew<CR>
+map  <C-l> :tabn<CR>
+map  <C-h> :tabp<CR>
+
+" nodejs säädöt
+autocmd FileType javascript setlocal omnifunc=nodejscomplete#CompleteJS
+let g:neocomplcache_omni_patterns.javascript = '\h\w*\|[^. \t]\.\w*'
+
+" Poistaa moodin, koska ei tarvita
+set noshowmode
+
+" Ack
+nnoremap <leader><leader>a :Ack<Space>
+
+" JSONissa koittaa laittaa väkisin heittomerkkejä
+let g:vim_json_syntax_conceal=0
+set conceallevel=0
+
+set nobackup
+set timeout timeoutlen=700 ttimeoutlen=-1
+set nospell
+inoremap jj <ESC>
+
+let VimuxUseNearestPane = 0
+
+" vimux bindaukset
+"map <Leader>rb :call VimuxRunCommand("clear; rspec " . bufname("%"))<CR>
+map <Leader>vp :VimuxPromptCommand<CR>
+map <Leader>vl :VimuxRunLastCommand<CR>
+map <Leader>vi :VimuxInspectRunner<CR>
+map <Leader>vq :VimuxCloseRunner<CR>
+map <Leader>vx :VimuxInterruptRunner<CR>
+let g:airline_powerline_fonts = 1
+let g:airline_section_b = '%{getcwd()} %t'
+unlet g:airline_left_sep
+unlet g:airline_right_sep

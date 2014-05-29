@@ -1,0 +1,12 @@
+Bundle "MarcWeber/vim-addon-mw-utils"
+Bundle "tomtom/tlib_vim"
+Bundle "garbas/vim-snipmate"
+Bundle "vadv/vim-chef"
+Bundle "bufexplorer.zip"
+Bundle "VimClojure"
+Bundle "myhere/vim-nodejs-complete"
+Bundle "merlinrebrovic/focus.vim"
+Bundle "freitass/todo.txt-vim"
+Bundle "benmills/vimux"
+
+let g:spf13_bundle_groups=['general', 'neocomplcache', 'programming', 'php', 'ruby', 'python', 'go', 'javascript', 'html', 'misc']

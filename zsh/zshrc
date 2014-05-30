@@ -64,7 +64,7 @@ if [ -e ~/.zshrc.local ]; then
     . ~/.zshrc.local
 fi
 
-if [ -e ~/.zshrc.$(hostname) ]; then
-    . ~/.zshrc.$(hostname)
+if [ -e ~/.zshrc.$(hostname).local ]; then
+    . ~/.zshrc.$(hostname).local
 fi
 

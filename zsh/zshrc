@@ -49,6 +49,7 @@ source $ZSH/oh-my-zsh.sh
 if [ -e ~/.paths ]; then
     . ~/.paths
 fi
+
 #source $HOME/bin/paths
 #export PATH=$PATH:/Users/petrisi/.rvm/gems/ruby-2.0.0-p0/bin:/Users/petrisi/.rvm/gems/ruby-2.0.0-p0@global/bin:/Users/petrisi/.rvm/rubies/ruby-2.0.0-p0/bin:/Users/petrisi/.rvm/bin:/Users/petrisi/nvm/v0.8.14/bin:/Users/petrisi/Applications/apache-jmeter-2.6/bin:/Users/petrisi/Applications/sqlplus:/Users/petrisi/Dropbox/bin:/Users/petrisi/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
 
@@ -60,10 +61,12 @@ function svndiff {
   svn diff "$@" | colordiff | less -RFX
 }
 
+# For machines with local home
 if [ -e ~/.zshrc.local ]; then
     . ~/.zshrc.local
 fi
 
+# For shared homes
 if [ -e ~/.zshrc.$(hostname) ]; then
     . ~/.zshrc.$(hostname)
 fi

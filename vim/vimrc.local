@@ -75,3 +75,6 @@ let g:airline_powerline_fonts = 1
 let g:airline_section_b = '%{getcwd()} %t'
 unlet g:airline_left_sep
 unlet g:airline_right_sep
+
+" VIM multiple cursors
+let g:multi_cursor_exit_from_insert_mode = 0

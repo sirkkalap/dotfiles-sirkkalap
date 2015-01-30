@@ -7,6 +7,7 @@ brew install \
 	autojump \
 	git \
 	mobile-shell \
+	python \
 	python3 \
 	reattach-to-user-namespace \
 	tmux \
@@ -22,6 +23,7 @@ brew cask install \
 	hipchat \
 	intellij-idea-ce \
 	iterm2 \
+	caskroom/versions/java7 \
 	sizeup \
 	sublime-text \
 	superduper \
@@ -35,3 +37,9 @@ brew cask install \
 #panamax				wget
 #pkg-config
 #atomicparsley
+
+# Python
+# http://docs.python-guide.org/en/latest/starting/install/osx/
+# brew install python python3
+# https://github.com/kennethreitz/python-guide/blob/master/docs/dev/virtualenvs.rst
+# pip install virtualenv

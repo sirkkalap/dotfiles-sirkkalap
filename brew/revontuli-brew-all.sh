@@ -16,7 +16,6 @@ brew install \
 #brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
-	crashplan \
 	dropbox \
 	github \
 	google-chrome \
@@ -28,6 +27,9 @@ brew cask install \
 	sublime-text \
 	superduper \
 	virtualbox
+
+# Disabled
+#	crashplan \
 
 #~ ❯❯❯ brew list
 #brew-cask			protobuf

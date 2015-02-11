@@ -60,7 +60,7 @@ brew install \
 #brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
-	caskroom/versions/java7 \
+	caskroom/versions/java8 \
 	dropbox \
 	etrecheck \
 	github \
@@ -74,10 +74,6 @@ brew cask install \
 	sublime-text \
 	virtualbox \
 	wireshark
-
-
-# Disabled
-#	crashplan \
 
 # Python
 # http://docs.python-guide.org/en/latest/starting/install/osx/

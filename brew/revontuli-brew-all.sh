@@ -17,16 +17,19 @@ brew install \
 #brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
+	bettertouchtool \
 	dropbox \
 	github \
 	google-chrome \
 	hipchat \
 	intellij-idea-ce \
 	iterm2 \
+	launchcontrol \
 	caskroom/versions/java7 \
 	sizeup \
 	sublime-text \
 	superduper \
+	vagrant \
 	virtualbox
 
 # Disabled

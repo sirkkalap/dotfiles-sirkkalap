@@ -11,6 +11,7 @@ brew install \
 	python \
 	python3 \
 	reattach-to-user-namespace \
+	screenresolution \
 	tmux \
 	wget \
 	zsh
@@ -18,6 +19,7 @@ brew install \
 
 brew cask install \
 	bettertouchtool \
+	cyberduck \
 	dropbox \
 	github \
 	google-chrome \

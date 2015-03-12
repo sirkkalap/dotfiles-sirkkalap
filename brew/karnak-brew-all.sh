@@ -35,6 +35,7 @@ brew install \
   mobile-shell \
   mongodb \
   neon \
+  nvm \
   pixman \
   pkg-config \
   poppler \

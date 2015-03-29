@@ -1,0 +1,12 @@
+#!/bin/bash
+
+proj=${1-~/proj}
+repos=$(cat $proj/repos.lst)
+
+for r in $repos; do
+    (
+        cd $proj/$r
+        git pull
+    )
+done
+

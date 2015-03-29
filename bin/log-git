@@ -1,0 +1,13 @@
+#!/bin/bash
+
+since=${1-2015-01-01}
+proj=${2-~/proj}
+repos=$(cat $proj/repos.lst)
+
+for r in $repos; do
+    (
+        cd $proj/$r
+        git git log --since="$since" --author="sirpete@iki.fi"
+    )
+done
+

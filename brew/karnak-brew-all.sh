@@ -67,12 +67,11 @@ brew cask install \
 	github \
 	google-chrome \
 	hipchat \
-	intellij-idea-ce \
 	iterm2 \
 	mactex \
 	sizeup \
-	soundcleod
 	sublime-text \
+  vagrant-manager \
 	virtualbox \
 	wireshark
 

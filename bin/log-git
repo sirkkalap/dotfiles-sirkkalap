@@ -6,8 +6,12 @@ repos=$(cat $proj/repos.lst)
 
 for r in $repos; do
     (
+        echo $proj/$r
         cd $proj/$r
-        git git log --since="$since" --author="sirpete@iki.fi"
+        git --no-pager log --color --date=short \
+            --pretty=format:'%Cgreen%cd%Creset %B' \
+            --abbrev-commit --since="$since" --author="sirpete@iki.fi"
+        echo
     )
 done
 

@@ -2,11 +2,13 @@
 
 proj=${1-~/proj}
 repos=$(cat $proj/repos.lst)
+opts="--log --stat"
 
 for r in $repos; do
     (
+        echo $proj/$r
         cd $proj/$r
-        git pull
+        git pull $opts
     )
 done
 

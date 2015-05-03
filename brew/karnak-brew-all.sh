@@ -62,6 +62,7 @@ brew install \
 #brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
+  bettertouchtool \
 	dropbox \
 	etrecheck \
 	github \

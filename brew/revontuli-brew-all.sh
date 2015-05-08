@@ -25,6 +25,7 @@ brew cask install \
 	github \
 	google-chrome \
 	hipchat \
+	intel-haxm \
 	iterm2 \
 	launchcontrol \
 	caskroom/versions/java7 \

@@ -1,6 +1,7 @@
 #!/bin/bash
-#ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-#brew doctor
+# curl -sSL https://raw.githubusercontent.com/sirkkalap/dotfiles-sirkkalap/master/brew/revontuli-brew-all.sh | bash -
+# ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# brew doctor
 brew update
 
 brew install caskroom/cask/brew-cask

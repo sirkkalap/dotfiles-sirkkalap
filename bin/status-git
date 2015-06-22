@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proj=${1-~/proj}
+repos=$(cat $proj/repos.lst)
+opts=""
+
+for r in $repos; do
+    (
+        echo $proj/$r
+        cd $proj/$r
+        git status $opts
+    )
+done
+

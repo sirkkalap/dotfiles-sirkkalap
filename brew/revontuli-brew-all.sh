@@ -27,6 +27,7 @@ brew cask install \
 	hipchat \
 	intel-haxm \
 	iterm2 \
+	itsycal \
 	launchcontrol \
 	caskroom/versions/java7 \
 	sizeup \

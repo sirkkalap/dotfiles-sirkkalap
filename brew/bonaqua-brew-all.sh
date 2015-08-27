@@ -5,6 +5,13 @@
 brew update
 
 brew install caskroom/cask/brew-cask
+
+# Some dependencies
+brew cask install \
+  Caskroom/cask/java \
+  xquartz 
+
+
 brew install \
   ansible \
   autoconf \
@@ -48,7 +55,7 @@ brew install \
   scons \
   sqlite \
   ssh-copy-id \
-  subversion17 \
+  homebrew/versions/subversion17 \
   tcptraceroute \
   tmux \
   tree \
@@ -65,16 +72,14 @@ brew cask install \
   bettertouchtool \
 	dropbox \
 	etrecheck \
-	github \
-	google-chrome \
+	github-desktop \
 	hipchat \
 	iterm2 \
-	mactex \
 	sizeup \
 	sublime-text \
   vagrant-manager \
 	virtualbox \
-	wireshark
+	wireshark 
 
 # Python
 # http://docs.python-guide.org/en/latest/starting/install/osx/

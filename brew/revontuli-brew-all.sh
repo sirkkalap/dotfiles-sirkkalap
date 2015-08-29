@@ -33,6 +33,7 @@ brew cask install \
 	caskroom/versions/java7 \
 	sizeup \
 	sublime-text \
+	twitter \
 	vagrant \
     virtualbox
 

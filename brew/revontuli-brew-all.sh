@@ -26,7 +26,6 @@ brew cask install \
 	github \
 	google-chrome \
 	hipchat \
-	intel-haxm \
 	iterm2 \
 	itsycal \
 	launchcontrol \

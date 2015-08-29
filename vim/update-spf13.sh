@@ -1,6 +1,6 @@
 #!/bin/sh
 (
-cd $HOME/to/spf13-vim/
+cd $HOME/.spf13-vim-3/
 git pull
 vim +BundleInstall! +BundleClean +q
 )

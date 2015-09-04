@@ -69,9 +69,9 @@ brew cask install \
 	google-chrome \
 	hipchat \
 	iterm2 \
-	mactex \
 	sizeup \
 	sublime-text \
+  vagrant \
   vagrant-manager \
 	virtualbox \
 	wireshark

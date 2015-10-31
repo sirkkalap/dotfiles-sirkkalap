@@ -14,7 +14,7 @@ brew install \
 	reattach-to-user-namespace \
 	screenresolution \
 	tmux \
-    vim \
+    vim --with-lua \
 	wget \
 	zsh
 #brew install --universal --java homebrew/versions/subversion17
@@ -32,7 +32,6 @@ brew cask install \
 	caskroom/versions/java7 \
 	sizeup \
 	sublime-text \
-	twitter \
 	vagrant \
     virtualbox
 

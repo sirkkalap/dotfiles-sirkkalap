@@ -13,6 +13,7 @@ brew install \
   colordiff \
   coreutils \
   diff-pdf \
+  docker \
   docker-machine \
   exiftool \
   git \

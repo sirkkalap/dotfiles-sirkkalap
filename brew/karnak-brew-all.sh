@@ -41,7 +41,7 @@ brew install \
 brew cask install \
   bettertouchtool \
   etrecheck \
-  github \
+  github-desktop \
   google-chrome \
   hipchat \
   iterm2 \

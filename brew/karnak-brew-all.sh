@@ -5,6 +5,10 @@
 brew update
 
 brew tap caskroom/cask
+
+# Install xquartz, since diff-pdf needs it
+brew cask install xquartz
+
 brew install \
   ansible \
   autoconf \

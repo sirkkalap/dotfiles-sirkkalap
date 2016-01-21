@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 (
     cd
     localconf=zshrc.$(hostname).local

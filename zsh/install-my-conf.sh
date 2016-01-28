@@ -1,6 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 BASEDIR=$(cd "$(dirname "$0")"; pwd)
-
 (
     cd
     localconf="zshrc.$(hostname)"

@@ -1,1 +1,33 @@
 alias gravel="mosh gravelandsand.local"
+source ~/.functions-sirkkalap.sh
+
+# lisataan polkuun oma bin
+paths=( ~/bin
+    ~/Dropbox/bin
+    /usr/local/mysql/bin
+    ~/Applications/sqlplus
+    ~/Applications/apache-jmeter-2.6/bin
+    /Applications/Postgres.app/Contents/MacOS/bin
+    /usr/local/share/python
+    ~/.rvm/bin
+    /opt/bro/bin
+    /usr/local/bin
+    /usr/local/sbin )
+
+for p in $paths; do
+    prepend_path_if_exists PATH $p
+done
+
+if [ -e ~/nvm/nvm.sh ]; then
+    . ~/nvm/nvm.sh
+fi
+
+if [ -f `brew --prefix`/etc/autojump ]; then
+  . `brew --prefix`/etc/autojump
+fi
+
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+fi
+
+

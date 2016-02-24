@@ -1,8 +1,7 @@
 #!/bin/sh
 BASEDIR=$(cd "$(dirname "$0")"; pwd)
 (
-  cd $HOME
   for c in $BASEDIR/*.conf; do
-    echo ln -s $c .$c
+    echo ln -s $c ${HOME}/.$c
   done
 )

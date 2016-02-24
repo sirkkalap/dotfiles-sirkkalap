@@ -9,7 +9,7 @@ set -e # Fail fast
 (
   wget https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
   tar zxf libevent-2.0.22-stable.tar.gz
-  cd libevent-2.0.22
+  cd libevent-2.0.22-stable
   ./configure && make
 )
 

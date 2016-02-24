@@ -2,6 +2,8 @@
 # pull and compile tmux
 # https://github.com/tmux/tmux/blob/master/README
 
+set -e # Fail fast
+
 git clone https://github.com/tmux/tmux.git
 cd tmux
 sh autogen.sh

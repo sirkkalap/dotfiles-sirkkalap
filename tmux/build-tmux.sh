@@ -2,6 +2,8 @@
 # pull and compile tmux
 # https://github.com/tmux/tmux/blob/master/README
 
+# Dependencies: automake, libevent, libevent-devel
+
 set -e # Fail fast
 
 git clone https://github.com/tmux/tmux.git

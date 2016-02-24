@@ -17,7 +17,9 @@ set -e # Fail fast
   git clone https://github.com/tmux/tmux.git
   cd tmux
   sh autogen.sh
-  ./configure && make
+  DIR="../libevent-2.0.22-stable"
+  ./configure CFLAGS="-I$DIR/include" LDFLAGS="-L$DIR/lib"
+  make
 )
 
 echo "run \nsudo tmux/install\n, if you want to install globally"

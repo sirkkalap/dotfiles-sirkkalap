@@ -7,6 +7,7 @@
 set -e # Fail fast
 
 (
+  cd $HOME
   wget https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
   tar zxf libevent-2.0.22-stable.tar.gz
   cd libevent-2.0.22-stable
@@ -17,7 +18,7 @@ set -e # Fail fast
   git clone https://github.com/tmux/tmux.git
   cd tmux
   sh autogen.sh
-  DIR="../libevent-2.0.22-stable"
+  DIR="$HOME/libevent-2.0.22-stable"
   ./configure CFLAGS="-I$DIR/include" LDFLAGS="-L$DIR/lib"
   make
 )

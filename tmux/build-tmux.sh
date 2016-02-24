@@ -7,7 +7,7 @@
 set -e # Fail fast
 
 (
-  curl -sSL https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
+  wget https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
   tar zxf libevent-2.0.22-stable.tar.gz
   cd libevent-2.0.22
   ./configure && make

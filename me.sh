@@ -54,5 +54,5 @@ fi
     ./vim/install-spf13.sh
     ./tmux/install-my-conf.sh
     # Set zsh as my default shell
-    [ ! $SHELL == zsh ] && chsh -s $(which zsh)
+    [[ ! $SHELL == *zsh ]] && echo "Run chsh -s $(which zsh) to set zsh as default"
 )

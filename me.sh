@@ -27,7 +27,13 @@ unset UNAME
 if [[ $DISTRO == centos* ]]; then
     require git 'sudo yum -y install git'
     require vim 'sudo yum -y install vim-enhanced'
-    require zsh 'sudo yum -y install zsh'
+    require zsh 'sudo yum -y install ncurses-devel && \
+                 wget -o- http://sourceforge.net/projects/zsh/files/zsh/5.0.2/zsh-5.0.2.tar.bz2/download\
+                 | tar jxf - &&\
+                 cd zsh-5.0.2 &&\
+                 ./configure && \
+                 make &&\
+                 sudo make install'
 fi
 
 if [[ $DISTRO == ubuntu* ]]; then

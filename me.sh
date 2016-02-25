@@ -41,6 +41,7 @@ if [[ $DISTRO == darvin ]]; then
     require brew2 'echo "sorry" && exit 1'
     require git 'brew install git'
     require vim 'brew install vim'
+    require zsh 'brew install zsh'
     require lynx 'brew install lynx'
 fi
 
@@ -52,4 +53,6 @@ fi
     ./zsh/install-my-conf.sh
     ./vim/install-spf13.sh
     ./tmux/install-my-conf.sh
+    # Set zsh as my default shell
+    [ ! $SHELL == zsh ] && chsh -s $(which zsh)
 )

@@ -42,7 +42,6 @@ if [[ $DISTRO == darvin ]]; then
     require lynx 'brew install lynx'
 fi
 
-exit 1
 (
     cd "$WORK"
     git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git

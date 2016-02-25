@@ -5,7 +5,7 @@ WORK=${1:-$HOME/proj}
 set -e # Fail fast
 
 require() {
-    command -v $1 >/dev/null 2>&1 || { echo >&2 "I require $1 but it's not installed.  Installing."; sudo $2; }
+    command -v $1 >/dev/null 2>&1 || { echo >&2 "I require $1 but it's not installed.  Installing."; $2; }
 }
 
 # Determine OS platform
@@ -27,11 +27,13 @@ unset UNAME
 if [[ $DISTRO == centos* ]]; then
     require git 'sudo yum -y install git'
     require vim 'sudo yum -y install vim-enhanced'
+    require zsh 'sudo yum -y install zsh'
 fi
 
 if [[ $DISTRO == ubuntu* ]]; then
     require git 'sudo apt-get -y install git'
     require vim 'sudo apt-get -y install vim-enhanced'
+    require zsh 'sudo apt-get -y install zsh'
 fi
 
 if [[ $DISTRO == darvin ]]; then

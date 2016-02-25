@@ -44,7 +44,7 @@ fi
 
 (
     cd "$WORK"
-    git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
+    [ ! -d dotfiles-sirkkalap ] && git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
     cd dotfiles-sirkkalap
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh

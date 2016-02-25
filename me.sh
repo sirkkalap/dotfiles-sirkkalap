@@ -5,7 +5,9 @@ WORK=${1:-$HOME/proj}
 set -e # Fail fast
 
 require() {
-    command -v $1 >/dev/null 2>&1 || { echo >&2 "I require $1 but it's not installed.  Installing."; $2; }
+    cmd=$1
+    shift
+    command -v $cmd >/dev/null 2>&1 || { echo >&2 "I require $cmd but it's not installed.  Installing."; eval "$@"; }
 }
 
 # Determine OS platform
@@ -27,8 +29,8 @@ unset UNAME
 if [[ $DISTRO == centos* ]]; then
     require git 'sudo yum -y install git'
     require vim 'sudo yum -y install vim-enhanced'
-    require zsh 'sudo yum -y install ncurses-devel'
-    require zsh 'wget -O- http://sourceforge.net/projects/zsh/files/zsh/5.0.2/zsh-5.0.2.tar.bz2/download\
+    require zsh 'sudo yum -y install ncurses-devel &&\
+                 wget -O- http://sourceforge.net/projects/zsh/files/zsh/5.0.2/zsh-5.0.2.tar.bz2/download\
                  | tar jxf - &&\
                  cd zsh-5.0.2 &&\
                  ./configure && \

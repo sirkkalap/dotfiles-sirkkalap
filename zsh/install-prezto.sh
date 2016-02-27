@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 if [ ! -e ${ZDOTDIR:-$HOME}/.zprezto ]; then
-  git clone --recursive https://github.com/sirkkalap/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+  git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
 fi
 
 (

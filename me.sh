@@ -60,6 +60,7 @@ fi
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh
     ./vim/install-spf13.sh
+    ./vim/install-my-vim-customizations.sh
     ./tmux/install-my-conf.sh
     # Set zsh as my default shell
     [[ ! $SHELL == *zsh ]] && echo "Run chsh -s $(which zsh) to set zsh as default"

@@ -8,15 +8,15 @@ set colorcolumn=85
 let vimclojure#HighlightBuiltins=1
 let vimclojure#ParenRainbow=1
 set smartindent
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
 set background=dark
 set gdefault
 colorscheme solarized
 autocmd BufWritePre * :%s/\s\+$//e
 
-let g:Powerline_symbols = 'fancy'
+" let g:Powerline_symbols = 'fancy'
 map // :nohlsearch <Esc>
 filetype plugin on
 
@@ -25,12 +25,9 @@ for buffer_no in range(1, 9)
   execute "nmap <Leader>" . buffer_no . " :b" . buffer_no . "\<CR>"
 endfor
 
-" poista cursorline
-" set cursorline!
-
-" switching to buffer 10 - 100 is mapped to ,0[nOfBuffer]
+" switching to buffer 10 - 100 is mapped to ,0[nofbuffer]
 for buffer_no in range(10, 100)
-  execute "nmap <Leader>j" . buffer_no . " :b" . buffer_no . "\<CR>"
+  execute "nmap <leader>0" . buffer_no . " :b" . buffer_no . "\<cr>"
 endfor
 
 " vim-javascript
@@ -38,22 +35,16 @@ let g:html_indent_inctags = "html,body,head,tbody"
 let g:html_indent_script1 = "inc"
 let g:html_indent_style1 = "inc"
 
-" TAB säädöt
-map  <C-n> :tabnew<CR>
-map  <C-l> :tabn<CR>
-map  <C-h> :tabp<CR>
-
 " nodejs säädöt
-autocmd FileType javascript setlocal omnifunc=nodejscomplete#CompleteJS
-let g:neocomplcache_omni_patterns.javascript = '\h\w*\|[^. \t]\.\w*'
+autocmd filetype javascript setlocal omnifunc=nodejscomplete#completejs
 
-" Poistaa moodin, koska ei tarvita
-set noshowmode
+" poistaa moodin, koska ei tarvita
+" set noshowmode
 
-" Ack
-nnoremap <leader><leader>a :Ack<Space>
+" ack
+nnoremap <leader><leader>a :ack<space>
 
-" JSONissa koittaa laittaa väkisin heittomerkkejä
+" jsonissa koittaa laittaa väkisin heittomerkkejä
 let g:vim_json_syntax_conceal=0
 set conceallevel=0
 
@@ -71,8 +62,8 @@ map <Leader>vl :VimuxRunLastCommand<CR>
 map <Leader>vi :VimuxInspectRunner<CR>
 map <Leader>vq :VimuxCloseRunner<CR>
 map <Leader>vx :VimuxInterruptRunner<CR>
-let g:airline_powerline_fonts = 1
-let g:airline_section_b = '%{getcwd()} %t'
+let g:airline_powerline_fonts = 0
+" let g:airline_section_b = '%{getcwd()} %t'
 unlet g:airline_left_sep
 unlet g:airline_right_sep
 

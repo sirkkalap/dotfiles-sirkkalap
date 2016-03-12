@@ -1,6 +1,7 @@
 #!/bin/sh
+BASEDIR=$(cd "$(dirname "$0")"; pwd)
 (
     cd
-    ln -sf proj/dotfiles-sirkkalap/vim/vimrc.local .vimrc.local
-    ln -sf proj/dotfiles-sirkkalap/vim/vimrc.bundle.local .vimrc.bundle.local
+    ln -sf "${BASEDIR}"/vimrc.local .vimrc.local
+    ln -sf "${BASEDIR}"/vimrc.bundles.local .vimrc.bundles.local
 )

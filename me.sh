@@ -38,9 +38,9 @@ if [[ $DISTRO == centos* ]]; then
                  sudo make install'
 fi
 
-if [[ $DISTRO == ubuntu* ]]; then
+if [[ $DISTRO == Ubuntu* ]]; then
     require git 'sudo apt-get -y install git'
-    require vim 'sudo apt-get -y install vim-enhanced'
+    require vim 'sudo apt-get -y install vim'
     require zsh 'sudo apt-get -y install zsh'
 fi
 

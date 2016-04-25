@@ -2,6 +2,8 @@
 
 WORK=${1:-$HOME/proj}
 
+mkdir -p "$WORK"
+
 set -e # Fail fast
 
 require() {

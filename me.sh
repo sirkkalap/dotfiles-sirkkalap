@@ -67,5 +67,5 @@ fi
     ./vim/install-my-vim-customizations.sh
     ./tmux/install-my-conf.sh
     # Set zsh as my default shell
-    [[ ! $SHELL == *zsh ]] && echo "Run chsh -s $(which zsh) to set zsh as default"
+    [[ ! $SHELL == *zsh ]] && echo "Add $(which zsh) to /etc/shells and run chsh -s $(which zsh) to set zsh as default"
 )

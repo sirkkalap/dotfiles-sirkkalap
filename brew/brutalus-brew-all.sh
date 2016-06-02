@@ -54,4 +54,4 @@ brew cask install \
 # http://docs.python-guide.org/en/latest/starting/install/osx/
 brew install python python3
 # https://github.com/kennethreitz/python-guide/blob/master/docs/dev/virtualenvs.rst
-pip install virtualenv
+pip list | grep -o virtualenv >/dev/null || pip install virtualenv

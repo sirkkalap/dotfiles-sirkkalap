@@ -59,7 +59,11 @@ fi
 
 (
     cd "$WORK"
-    [ ! -d dotfiles-sirkkalap ] && git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
+    if [ ! -d dotfiles-sirkkalap ]; then
+        git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
+    else
+        git pull
+    fi
     cd dotfiles-sirkkalap
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh

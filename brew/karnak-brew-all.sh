@@ -4,8 +4,6 @@
 # curl -sSL https://raw.githubusercontent.com/sirkkalap/dotfiles-sirkkalap/master/brew/karnak-brew-all.sh | bash -
 brew update
 
-brew tap caskroom/cask
-
 # Install xquartz, since diff-pdf needs it
 brew cask install xquartz
 
@@ -24,7 +22,6 @@ brew install \
   leiningen \
   libevent \
   maven \
-  mercurial \
   mobile-shell \
   mongodb \
   nvm \
@@ -41,10 +38,9 @@ brew install \
   wget \
   zsh
 
-#brew install --universal --java homebrew/versions/subversion17
+brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
-  bettertouchtool \
   etrecheck \
   github-desktop \
   google-chrome \
@@ -56,6 +52,6 @@ brew cask install \
 
 # Python
 # http://docs.python-guide.org/en/latest/starting/install/osx/
-# brew install python python3
+brew install python python3
 # https://github.com/kennethreitz/python-guide/blob/master/docs/dev/virtualenvs.rst
-# pip install virtualenv
+pip install virtualenv

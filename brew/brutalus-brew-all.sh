@@ -5,8 +5,8 @@
 brew update
 
 # Install xquartz, since diff-pdf needs it. Java is needed by maven.
-brew cask install xquartz java
-
+brew install Caskroom/cask/xquartz \
+  Caskroom/cask/java
 
 brew install \
   ansible \

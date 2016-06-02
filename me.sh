@@ -55,6 +55,7 @@ if [[ $DISTRO == darwin ]]; then
     require zsh 'brew install zsh'
     require lynx 'brew install lynx'
     require tmux 'brew install tmux'
+    require reattach-to-user-namespace 'brew install reattach-to-user-namespace'
 fi
 
 (

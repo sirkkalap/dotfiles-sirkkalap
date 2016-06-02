@@ -49,7 +49,7 @@ fi
 
 if [[ $DISTRO == darwin ]]; then
     echo "here"
-    require brew2 'echo "sorry" && exit 1'
+    require brew '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
     require git 'brew install git'
     require vim 'brew install vim'
     require zsh 'brew install zsh'

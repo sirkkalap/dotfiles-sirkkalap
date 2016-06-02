@@ -38,7 +38,7 @@ brew install \
   wget \
   zsh
 
-brew install --universal --java homebrew/versions/subversion17
+# brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
   etrecheck \

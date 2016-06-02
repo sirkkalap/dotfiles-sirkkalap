@@ -4,13 +4,10 @@
 # curl -sSL https://raw.githubusercontent.com/sirkkalap/dotfiles-sirkkalap/master/brew/karnak-brew-all.sh | bash -
 brew update
 
-brew install caskroom/cask/brew-cask
-
 # Some dependencies
 brew cask install \
   Caskroom/cask/java \
   xquartz 
-
 
 brew install \
   ansible \
@@ -69,15 +66,13 @@ brew install \
 #brew install --universal --java homebrew/versions/subversion17
 
 brew cask install \
-  bettertouchtool \
 	dropbox \
 	etrecheck \
 	github-desktop \
 	hipchat \
 	iterm2 \
-	sizeup \
 	sublime-text \
-  vagrant-manager \
+	vagrant \
 	virtualbox \
 	wireshark 
 

@@ -61,10 +61,11 @@ fi
     cd "$WORK"
     if [ ! -d dotfiles-sirkkalap ]; then
         git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
+        cd dotfiles-sirkkalap
     else
+        cd dotfiles-sirkkalap
         git pull
     fi
-    cd dotfiles-sirkkalap
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh
     ./vim/install-spf13.sh

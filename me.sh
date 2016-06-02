@@ -44,6 +44,7 @@ if [[ $DISTRO == Ubuntu* ]]; then
     require git 'sudo apt-get -y install git'
     require vim 'sudo apt-get -y install vim'
     require zsh 'sudo apt-get -y install zsh'
+    require tmux 'sudo apt-get -y install tmux'
 fi
 
 if [[ $DISTRO == darvin ]]; then
@@ -53,6 +54,7 @@ if [[ $DISTRO == darvin ]]; then
     require vim 'brew install vim'
     require zsh 'brew install zsh'
     require lynx 'brew install lynx'
+    require tmux 'brew install tmux'
 fi
 
 (

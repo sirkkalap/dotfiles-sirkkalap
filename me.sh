@@ -47,7 +47,7 @@ if [[ $DISTRO == Ubuntu* ]]; then
     require tmux 'sudo apt-get -y install tmux'
 fi
 
-if [[ $DISTRO == darvin ]]; then
+if [[ $DISTRO == darwin ]]; then
     echo "here"
     require brew2 'echo "sorry" && exit 1'
     require git 'brew install git'

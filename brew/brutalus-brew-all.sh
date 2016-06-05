@@ -4,8 +4,9 @@
 # curl -sSL https://raw.githubusercontent.com/sirkkalap/dotfiles-sirkkalap/master/brew/brutalus-brew-all.sh | bash -
 brew update
 
-# Install xquartz, since diff-pdf needs it
-brew cask install xquartz
+# Install xquartz, since diff-pdf needs it. Java is needed by maven.
+brew install Caskroom/cask/xquartz \
+  Caskroom/cask/java
 
 brew install \
   ansible \
@@ -54,4 +55,4 @@ brew cask install \
 # http://docs.python-guide.org/en/latest/starting/install/osx/
 brew install python python3
 # https://github.com/kennethreitz/python-guide/blob/master/docs/dev/virtualenvs.rst
-pip install virtualenv
+pip list | grep -o virtualenv >/dev/null || pip install virtualenv

@@ -1,0 +1,61 @@
+
+# Maven debug options
+export MO_DEBUG='-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y'
+export MAVEN_OPTS='-Xms256m -Xmx1000m -XX:MaxPermSize=256m -XX:ReservedCodeCacheSize=64m -Djava.awt.headless=true'
+export MAVEN_OPTS_ORIG='-Xms256m -Xmx1000m -XX:MaxPermSize=256m -XX:ReservedCodeCacheSize=64m'
+export MAVEN_OPTS_NEW_REPO="-Xms256m -Xmx1000m -XX:MaxPermSize=256m -XX:ReservedCodeCacheSize=64m -Dmaven.repo.local=/tmp/newrepository"
+
+export JAVA_HOME=$(/usr/libexec/java_home -t CommandLine)
+
+export LANG="en_US.UTF-8"
+export LC_CTYPE="fi_FI.UTF-8"
+export LC_TIME="fi_FI.UTF-8"
+export LESSCHARSET="utf-8"
+
+export VISUAL=vim
+
+export HOMEBREW_GITHUB_API_TOKEN=777e621333804da30bf22af6710a45346fb324d2
+$(boot2docker shellinit 2>/dev/null)
+
+# Remove CA crap rule ALWAYS!
+#sudo ipfw delete 00036 2>/dev/null
+
+alias e='subl .'
+
+# Docker ps with selected columns
+dps()  {
+  docker ps $@ | awk '
+  NR==1{
+    FIRSTLINEWIDTH=length($0)
+    IDPOS=index($0,"CONTAINER ID");
+    IMAGEPOS=index($0,"IMAGE");
+    COMMANDPOS=index($0,"COMMAND");
+    CREATEDPOS=index($0,"CREATED");
+    STATUSPOS=index($0,"STATUS");
+    PORTSPOS=index($0,"PORTS");
+    NAMESPOS=index($0,"NAMES");
+    UPDATECOL();
+  }
+  function UPDATECOL () {
+    ID=substr($0,IDPOS,IMAGEPOS-IDPOS-1);
+    IMAGE=substr($0,IMAGEPOS,COMMANDPOS-IMAGEPOS-1);
+    COMMAND=substr($0,COMMANDPOS,CREATEDPOS-COMMANDPOS-1);
+    CREATED=substr($0,CREATEDPOS,STATUSPOS-CREATEDPOS-1);
+    STATUS=substr($0,STATUSPOS,PORTSPOS-STATUSPOS-1);
+    PORTS=substr($0,PORTSPOS,NAMESPOS-PORTSPOS-1);
+    NAMES=substr($0, NAMESPOS);
+  }
+  function PRINT () {
+    print ID NAMES IMAGE STATUS CREATED COMMAND PORTS;
+  }
+  NR==2{
+    NAMES=sprintf("%s%*s",NAMES,length($0)-FIRSTLINEWIDTH,"");
+    PRINT();
+  }
+  NR>1{
+    UPDATECOL();
+    PRINT();
+  }' | less -FSX;
+}
+dpsa() { dps -a $@; }
+

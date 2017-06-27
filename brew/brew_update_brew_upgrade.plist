@@ -6,7 +6,7 @@
 	<string>brew_update_brew_upgrade</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>zsh</string>
+		<string>/bin/sh</string>
 		<string>-c</string>
 		<string>~/bin/brew_update_brew_upgrade.sh</string>
 	</array>

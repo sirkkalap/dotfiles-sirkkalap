@@ -41,6 +41,7 @@ if [[ $DISTRO == centos* ]]; then
 fi
 
 if [[ $DISTRO == Ubuntu* ]]; then
+    require curl 'sudo apt-get -y install curl'
     require git 'sudo apt-get -y install git'
     require vim 'sudo apt-get -y install vim'
     require zsh 'sudo apt-get -y install zsh'

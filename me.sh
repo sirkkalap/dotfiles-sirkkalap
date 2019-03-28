@@ -2,6 +2,10 @@
 
 WORK=${1:-$HOME/proj}
 
+BASEDIR=$(cd $(dirname $0); /bin/pwd)
+
+source ${BASEDIR}/utils_sirkkalap.sh
+
 mkdir -p "$WORK"
 
 set -e # Fail fast
@@ -9,26 +13,12 @@ set -e # Fail fast
 require() {
     cmd=$1
     shift
-    command -v $cmd >/dev/null 2>&1 || { echo >&2 "I require $cmd but it's not installed.  Installing."; eval "$@"; }
+    command -v ${cmd} >/dev/null 2>&1 || { echo >&2 "I require ${cmd} but it's not installed.  Installing."; eval "$@"; }
 }
 
-# Determine OS platform
-UNAME=$(uname | tr "[:upper:]" "[:lower:]")
-# If Linux, try to determine specific distribution
-if [ "$UNAME" == "linux" ]; then
-    # If available, use LSB to identify distribution
-    if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
-        export DISTRO=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
-    # Otherwise, use release info file
-    else
-        export DISTRO=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1)
-    fi
-fi
-# For everything else (or if above failed), just use generic identifier
-[ "$DISTRO" == "" ] && export DISTRO=$UNAME
-unset UNAME
+DISTRO=$(utils_sirkkalap::determine_distro)
 
-if [[ $DISTRO == centos* ]]; then
+if [[ ${DISTRO} == centos* ]]; then
     require git 'sudo yum -y install git'
     require vim 'sudo yum -y install vim-enhanced'
     require zsh 'sudo yum -y install ncurses-devel &&\
@@ -40,7 +30,7 @@ if [[ $DISTRO == centos* ]]; then
                  sudo make install'
 fi
 
-if [[ $DISTRO == Ubuntu* ]]; then
+if [[ ${DISTRO} == Ubuntu* ]]; then
     require curl 'sudo apt-get -y install curl'
     require git 'sudo apt-get -y install git'
     require vim 'sudo apt-get -y install vim'
@@ -48,7 +38,7 @@ if [[ $DISTRO == Ubuntu* ]]; then
     require tmux 'sudo apt-get -y install tmux'
 fi
 
-if [[ $DISTRO == darwin ]]; then
+if [[ ${DISTRO} == darwin ]]; then
     echo "here"
     require brew '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
     require git 'brew install git'
@@ -61,7 +51,7 @@ fi
 
 (
     cd "$WORK"
-    if [ ! -d dotfiles-sirkkalap ]; then
+    if [[ ! -d dotfiles-sirkkalap ]]; then
         git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
         cd dotfiles-sirkkalap
     else
@@ -70,7 +60,7 @@ fi
     fi
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh
-    if [ ! -d ~/.spf13-vim-3 ]; then
+    if [[ ! -d ~/.spf13-vim-3 ]]; then
         ./vim/install-spf13.sh
         ./vim/install-my-vim-customizations.sh
     fi

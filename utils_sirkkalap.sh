@@ -97,3 +97,11 @@ function utils_sirkkalap::confirm () {
             ;;
     esac
 }
+
+function utils_sirkkalap::block() {
+    text="* $@ *"
+    chars=${#text}
+    printf '*%.0s' $(seq 1 $chars); echo
+    echo "$text"
+    printf '*%.0s' $(seq 1 $chars); echo; echo
+}

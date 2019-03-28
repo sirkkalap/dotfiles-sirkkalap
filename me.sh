@@ -67,6 +67,13 @@ fi
         cd dotfiles-sirkkalap
         git pull
     fi
+
+    mkdir -p ~/bin
+    mkdir -p ~/.paths.d
+    mkdir -p ~/.env.d
+    echo "~/bin" >~/.paths.d/home_bin
+    ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
+
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh
     if [ ! -d ~/.spf13-vim-3 ]; then

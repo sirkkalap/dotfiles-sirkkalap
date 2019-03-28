@@ -36,6 +36,7 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
     require vim 'sudo apt-get -y install vim'
     require zsh 'sudo apt-get -y install zsh'
     require tmux 'sudo apt-get -y install tmux'
+    require go 'go/install.sh'
 fi
 
 if [[ ${DISTRO} == darwin ]]; then

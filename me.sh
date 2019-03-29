@@ -16,7 +16,7 @@ require() {
     command -v ${cmd} >/dev/null 2>&1 || { echo >&2 "I require ${cmd} but it's not installed.  Installing."; eval "$@"; }
 }
 
-DISTRO=$(utils_sirkkalap::determine_distro)
+DISTRO=$(utils_sirkkalap::distro)
 
 if [[ ${DISTRO} == centos* ]]; then
     require git 'sudo yum -y install git'

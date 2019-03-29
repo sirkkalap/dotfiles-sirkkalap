@@ -9,7 +9,7 @@
 
 
 # Determine OS platform
-function utils_sirkkalap::determine_distro() {
+function utils_sirkkalap::distro() {
     local uname=$(uname | tr "[:upper:]" "[:lower:]")
     # If Linux, try to determine specific distribution
     if [[ "$uname" == "linux" ]]; then

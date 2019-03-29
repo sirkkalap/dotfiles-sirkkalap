@@ -40,7 +40,6 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
 fi
 
 if [[ ${DISTRO} == darwin ]]; then
-    echo "here"
     require brew '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
     require git 'brew install git'
     require vim 'brew install vim'

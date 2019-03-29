@@ -105,3 +105,12 @@ function utils_sirkkalap::block() {
     echo "$text"
     printf '*%.0s' $(seq 1 $chars); echo; echo
 }
+
+# Print out a block of *'s and the given text inside it
+function utils_sirkkalap::block() {
+    text="* $@ *"
+    chars=${#text}
+    printf '*%.0s' $(seq 1 $chars); echo
+    echo "$text"
+    printf '*%.0s' $(seq 1 $chars); echo; echo
+}

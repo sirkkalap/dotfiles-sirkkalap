@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 curl -O https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
-sha256sum=$(sha256sum go1.10.3.linux-amd64.tar.gz)
+sha256sum=$(sha256sum go1.10.3.linux-amd64.tar.gz | cut -f1 -d' ')
 if [[ ${sha256sum} != "fa1b0e45d3b647c252f51f5e1204aba049cde4af177ef9f2181f43004f901035" ]]; then
     echo "Tar file sha256sum mismatch. Corrupted download or tainted source. Exiting."
     exit 127

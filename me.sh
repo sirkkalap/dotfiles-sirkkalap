@@ -16,6 +16,13 @@ require() {
     command -v ${cmd} >/dev/null 2>&1 || { echo >&2 "I require ${cmd} but it's not installed.  Installing."; eval "$@"; }
 }
 
+mkdir -p ~/bin
+mkdir -p ~/.paths.d
+mkdir -p ~/.env.d
+echo "~/bin" >~/.paths.d/home_bin
+ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
+
+
 DISTRO=$(utils_sirkkalap::distro)
 
 if [[ ${DISTRO} == centos* ]]; then
@@ -59,12 +66,6 @@ fi
         cd dotfiles-sirkkalap
         git pull
     fi
-
-    mkdir -p ~/bin
-    mkdir -p ~/.paths.d
-    mkdir -p ~/.env.d
-    echo "~/bin" >~/.paths.d/home_bin
-    ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
 
     ./zsh/install-prezto.sh
     ./zsh/install-my-conf.sh

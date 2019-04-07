@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # https://github.com/docker/docker-credential-helpers
+set -e
 BASEDIR=$(cd $(dirname $0); /bin/pwd)
 
 source ~/bin/utils_sirkkalap.sh

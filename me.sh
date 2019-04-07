@@ -47,7 +47,7 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
     require go 'go/install.sh'
     require tree 'sudo apt-get -y install tree'
     require netstat 'sudo apt-get -y install net-tools'
-    require apt-file 'sudo apt-get install apt-file'
+    require apt-file 'sudo apt-get -y install apt-file'
 fi
 
 if [[ ${DISTRO} == darwin ]]; then

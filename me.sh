@@ -43,6 +43,7 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
     require vim 'sudo apt-get -y install vim'
     require zsh 'sudo apt-get -y install zsh'
     require tmux 'sudo apt-get -y install tmux'
+    require make 'sudo apt-get -y install build-essential'
     require go 'go/install.sh'
     require tree 'sudo apt-get -y install tree'
     require netstat 'sudo apt-get -y install net-tools'

@@ -44,6 +44,7 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
     require zsh 'sudo apt-get -y install zsh'
     require tmux 'sudo apt-get -y install tmux'
     require go 'go/install.sh'
+    require tree 'sudo apt-get -y install tree'
 fi
 
 if [[ ${DISTRO} == darwin ]]; then
@@ -55,6 +56,7 @@ if [[ ${DISTRO} == darwin ]]; then
     require tmux 'brew install tmux'
     require reattach-to-user-namespace 'brew install reattach-to-user-namespace'
     require go 'brew install go'
+    require tree 'brew install tree'
 fi
 
 (

@@ -48,6 +48,12 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
     require tree 'sudo apt-get -y install tree'
     require netstat 'sudo apt-get -y install net-tools'
     require apt-file 'sudo apt-get -y install apt-file'
+    # https://github.com/visit1985/mdp
+    require mdp    '[[ -e /usr/lib/x86_64-linux-gnu/libncursesw.so ]] || sudo apt-get install -y libncursesw5-dev&&\
+                    git clone https://github.com/visit1985/mdp.git&&\
+                    cd mdp&&\
+                    make&&\
+                    sudo make install'
 fi
 
 if [[ ${DISTRO} == darwin ]]; then

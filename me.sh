@@ -59,23 +59,24 @@ if [[ ${DISTRO} == darwin ]]; then
     require tree 'brew install tree'
 fi
 
-(
-    cd "$WORK"
-    if [[ ! -d dotfiles-sirkkalap ]]; then
-        git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
-        cd dotfiles-sirkkalap
-    else
-        cd dotfiles-sirkkalap
-        git pull
-    fi
 
-    ./zsh/install-prezto.sh
-    ./zsh/install-my-conf.sh
-    if [[ ! -d ~/.spf13-vim-3 ]]; then
-        ./vim/install-spf13.sh
-        ./vim/install-my-vim-customizations.sh
-    fi
-    ./tmux/install-my-conf.sh
-    # Set zsh as my default shell
-    [[ ! $SHELL == *zsh ]] && echo "Add $(which zsh) to /etc/shells and run chsh -s $(which zsh) to set zsh as default"
-)
+cd "$WORK"
+if [[ ! -d dotfiles-sirkkalap ]]; then
+    git clone https://github.com/sirkkalap/dotfiles-sirkkalap.git
+    cd dotfiles-sirkkalap
+else
+    cd dotfiles-sirkkalap
+    git pull --quiet
+fi
+
+./zsh/install-prezto.sh
+./zsh/install-my-conf.sh
+if [[ ! -d ~/.spf13-vim-3 ]]; then
+    ./vim/install-spf13.sh
+    ./vim/install-my-vim-customizations.sh
+fi
+./tmux/install-my-conf.sh
+# Set zsh as my default shell
+if [[ ! $SHELL == *zsh ]]; then
+    echo "Add $(which zsh) to /etc/shells and run chsh -s $(which zsh) to set zsh as default"
+fi

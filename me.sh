@@ -45,6 +45,7 @@ if [[ ${DISTRO} == Ubuntu* ]]; then
     require tmux 'sudo apt-get -y install tmux'
     require go 'go/install.sh'
     require tree 'sudo apt-get -y install tree'
+    require netstat 'sudo apt-get -y install net-tools'
 fi
 
 if [[ ${DISTRO} == darwin ]]; then

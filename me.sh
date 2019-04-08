@@ -78,6 +78,10 @@ else
     git pull --quiet
 fi
 
+# Git lg alias
+git config --global alias.lg \
+  "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+
 ./zsh/install-prezto.sh
 ./zsh/install-my-conf.sh
 if [[ ! -d ~/.spf13-vim-3 ]]; then

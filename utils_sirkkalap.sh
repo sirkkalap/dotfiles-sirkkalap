@@ -67,17 +67,21 @@ function utils_sirkkalap::prepend_path()
 
 function utils_sirkkalap::prepend_path_if_exists()
 {
-    if [ -d "$2" ]
+    local new_path
+    eval new_path=$2
+    if [[ -d ${new_path} ]]
     then
-        utils_sirkkalap::prepend_path $1 $2
+        utils_sirkkalap::prepend_path $1 ${new_path}
     fi
 }
 
-function funcspappend_path_if_exists()
+function utils_sirkkalap::append_path_if_exists()
 {
-    if [ -d "$2" ]
+    local new_path
+    eval new_path=$2
+    if [[ -d ${new_path} ]]
     then
-        utils_sirkkalap::append_path $1 $2
+        utils_sirkkalap::append_path $1 ${new_path}
     fi
 }
 

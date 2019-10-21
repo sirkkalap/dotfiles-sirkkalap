@@ -93,3 +93,9 @@ fi
 if [[ ! $SHELL == *zsh ]]; then
     echo "Add $(which zsh) to /etc/shells and run chsh -s $(which zsh) to set zsh as default"
 fi
+
+(
+    cd ~/.env.d
+    ln -s -f ~/proj/dotfiles-sirkkalap/dot_env.d/*.sh .
+    
+)

@@ -14,7 +14,7 @@ if [[ "${distro}" == Ubuntu* ]]; then
     sudo usermod -aG docker ${USER}
 fi
 
-if [[ "${distro}" == darvin ]]; then
+if [[ "${distro}" == darwin ]]; then
     brew cask install docker
     open /Applications/Docker.app
 fi

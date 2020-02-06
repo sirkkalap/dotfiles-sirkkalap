@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+BASEDIR=$(cd $(dirname $0); /bin/pwd)
+cd $BASEDIR
+
 source ~/bin/utils_sirkkalap.sh
 
 distro=$(utils_sirkkalap::distro)

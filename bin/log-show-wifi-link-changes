@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+log show --predicate '(processImagePath contains "kernel") && (eventMessage contains "AirPort: Link ")' --style syslog --last 1d

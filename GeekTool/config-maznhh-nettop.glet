@@ -61,9 +61,9 @@
 	<key>FontFamily</key>
 	<string>Menlo-Regular</string>
 	<key>FontSize</key>
-	<real>6</real>
+	<real>8</real>
 	<key>GeekletFrame</key>
-	<string>{{1395, 748}, {1156.1875, 635.4296875}}</string>
+	<string>{{1386, 28}, {1169, 1348}}</string>
 	<key>HasShadow</key>
 	<false/>
 	<key>Identifier</key>

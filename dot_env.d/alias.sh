@@ -10,3 +10,10 @@ alias cpi="${aliases[cp]:-cp} -i"
 alias lni="${aliases[ln]:-ln} -i"
 alias mvi="${aliases[mv]:-mv} -i"
 alias rmi="${aliases[rm]:-rm} -i"
+
+# http://tosbourn.com/view-markdown-files-terminal/
+function mdread () {
+  pandoc $1 | lynx -stdin
+}
+
+

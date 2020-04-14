@@ -1,0 +1,13 @@
+emacs
+etrecheck
+github-desktop
+hipchat
+iterm2
+itsycal
+launchcontrol
+skype
+sourcetree
+sublime-text
+vagrant
+virtualbox
+wireshark

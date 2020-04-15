@@ -8,7 +8,7 @@
 	ZmZmg4n4fz8Bg4H1fz8Ahg==
 	</data>
 	<key>Command</key>
-	<string>nettop -cP -l 2 -s 14</string>
+	<string>nettop -cP -l 1</string>
 	<key>DisplayID</key>
 	<integer>69979388</integer>
 	<key>DisplayStatusImage</key>
@@ -63,7 +63,7 @@
 	<key>FontSize</key>
 	<real>8</real>
 	<key>GeekletFrame</key>
-	<string>{{1386, 28}, {1169, 1348}}</string>
+	<string>{{1354.4453125, 36.59375}, {1169, 1348}}</string>
 	<key>HasShadow</key>
 	<false/>
 	<key>Identifier</key>

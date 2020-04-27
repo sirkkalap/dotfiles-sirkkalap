@@ -7,9 +7,9 @@ distro=$(utils_sirkkalap::distro)
 function clone_sync_repo_if_not_exists()
 {
     local CONF_DIR=$1
-    if [[ ! -d ${CONF_DIR}/.git ]]; then
-        rm -rf ${CONF_DIR}
-        git clone git@github.com:sirkkalap/sublime-text-settings-sirkkalap.git ${CONF_DIR}
+    if [[ ! -d "${CONF_DIR}/.git" ]]; then
+        rm -rf "${CONF_DIR}"
+        git clone git@github.com:sirkkalap/sublime-text-settings-sirkkalap.git "${CONF_DIR}"
     else
         echo "Found ${CONF_DIR}/.git folder. Not touching the configuration folder."
     fi

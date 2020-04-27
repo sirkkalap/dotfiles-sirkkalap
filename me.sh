@@ -66,6 +66,8 @@ if [[ ${DISTRO} == darwin ]]; then
     require reattach-to-user-namespace 'brew install reattach-to-user-namespace'
     require go 'brew install go'
     require tree 'brew install tree'
+    require subl "${BASEDIR}/sublimetext/install.sh"
+    require pandoc 'brew install pandoc'
 fi
 
 
@@ -97,5 +99,5 @@ fi
 (
     cd ~/.env.d
     ln -s -f ~/proj/dotfiles-sirkkalap/dot_env.d/*.sh .
-    
+
 )

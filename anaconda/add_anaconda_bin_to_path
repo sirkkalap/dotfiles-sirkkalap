@@ -1,0 +1,8 @@
+# Add anaconda bin to path
+
+# NOTE DO NOT RUN BREW IN SHELL THAT HAS ANACONDA IN PATH!
+
+source ~/bin/utils_sirkkalap.sh
+
+utils_sirkkalap::prepend_path PATH /usr/local/anaconda3/bin
+

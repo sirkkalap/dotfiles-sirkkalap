@@ -15,7 +15,7 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    #brew $CASK install $PACKAGE </dev/null
+    brew $CASK install $PACKAGE </dev/null
     ln -sf $BASEDIR/add_anaconda_bin_to_path ~/bin/
     ln -sf $BASEDIR/conda_brew.sh ~/.env.d/
 fi

@@ -3,4 +3,4 @@ GCMD=${@:-pull}
 
 find . -depth 2 -name .git -type d \
 | cut -f 1-2 -d / \
-| xargs -I {} bash -c "cd {} && git ${GCMD}"
+| xargs -I {} bash -c "echo {} && cd {} && git ${GCMD}"

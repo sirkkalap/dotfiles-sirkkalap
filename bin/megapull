@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+find . -depth 2 -name .git | cut -f 1-2 -d / | xargs -I {} bash -c 'cd {} && git pull'

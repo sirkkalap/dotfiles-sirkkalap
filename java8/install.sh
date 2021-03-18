@@ -11,5 +11,5 @@ fi
 
 if [[ "${distro}" == darwin ]]; then
     brew tap adoptopenjdk/openjdk
-    brew cask install adoptopenjdk8
+    brew install adoptopenjdk8
 fi

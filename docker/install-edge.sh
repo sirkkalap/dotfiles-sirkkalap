@@ -10,6 +10,6 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew cask install docker-edge
+    brew install docker-edge
     open /Applications/Docker.app
 fi

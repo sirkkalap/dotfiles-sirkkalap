@@ -10,5 +10,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew cask install geektool
+    brew install geektool
 fi

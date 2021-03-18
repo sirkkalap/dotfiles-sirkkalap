@@ -5,9 +5,9 @@
 brew update
 
 # Some dependencies
-brew cask install \
+brew install \
   Caskroom/cask/java \
-  xquartz 
+  xquartz
 
 brew install \
   ansible \
@@ -65,7 +65,7 @@ brew install \
 
 #brew install --universal --java homebrew/versions/subversion17
 
-brew cask install \
+brew install \
 	dropbox \
 	etrecheck \
 	github-desktop \
@@ -74,7 +74,7 @@ brew cask install \
 	sublime-text \
 	vagrant \
 	virtualbox \
-	wireshark 
+	wireshark
 
 # Python
 # http://docs.python-guide.org/en/latest/starting/install/osx/

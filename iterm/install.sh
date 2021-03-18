@@ -10,5 +10,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew cask install iterm2
+    brew install iterm2
 fi

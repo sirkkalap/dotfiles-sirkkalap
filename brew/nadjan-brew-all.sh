@@ -8,6 +8,6 @@ brew install caskroom/cask/brew-cask
 	wget
 #brew install --universal --java homebrew/versions/subversion17
 
-brew cask install \
+brew install \
 	caffeine \
 	dropbox

@@ -8,5 +8,5 @@ distro=$(utils_sirkkalap::distro)
 #fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew cask install slack
+    brew install slack
 fi

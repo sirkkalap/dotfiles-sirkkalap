@@ -19,7 +19,7 @@ brew install \
 	zsh
 #brew install --universal --java homebrew/versions/subversion17
 
-brew cask install \
+brew install \
 	bettertouchtool \
 	cyberduck \
 	dropbox \

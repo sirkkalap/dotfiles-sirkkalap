@@ -41,7 +41,7 @@ brew install \
 
 # brew install --universal --java homebrew/versions/subversion17
 
-brew cask install \
+brew install \
   etrecheck \
   github-desktop \
   google-chrome \

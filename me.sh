@@ -20,6 +20,7 @@ mkdir -p ~/bin
 mkdir -p ~/.paths.d
 mkdir -p ~/.env.d
 echo "~/bin" >~/.paths.d/home_bin
+echo "/opt/homebrew/bin" >~/.paths.d/opt_homebrew_bin
 ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
 
 
@@ -67,7 +68,7 @@ if [[ ${DISTRO} == darwin ]]; then
     require go 'brew install go'
     require tree 'brew install tree'
     require subl "${BASEDIR}/sublimetext/install.sh"
-    require pandoc 'brew install pandoc'
+    #require pandoc 'brew install pandoc'
 fi
 
 

@@ -16,9 +16,9 @@ function clone_sync_repo_if_not_exists()
 }
 
 if [[ "${distro}" == Ubuntu* ]]; then
-	clone_sync_repo_if_not_exists ${HOME}/.config/sublime-text-3/Packages/User
+	clone_sync_repo_if_not_exists ${HOME}/.config/sublime-text/Packages/User
 fi
 
 if [[ "${distro}" == darwin ]]; then
-	clone_sync_repo_if_not_exists ${HOME}/Library/Application\ Support/Sublime\ Text\ 3/Packages/User
+	clone_sync_repo_if_not_exists ${HOME}/Library/Application\ Support/Sublime\ Text/Packages/User
 fi

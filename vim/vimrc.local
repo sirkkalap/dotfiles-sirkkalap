@@ -75,3 +75,6 @@ set relativenumber
 
 " Vimdiff next / prev diff
 
+" SnipMate version asetus
+let g:snipMate = { 'snippet_version' : 1 }
+

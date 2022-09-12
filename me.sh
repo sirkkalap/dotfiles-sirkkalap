@@ -61,10 +61,10 @@ if [[ ${DISTRO} == darwin ]]; then
     require brew '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
     require git 'brew install git'
     require vim 'brew install vim'
-    require /usr/local/bin/zsh 'brew install zsh'
+    require /opt/homebrew/bin/zsh 'brew install zsh'
     require lynx 'brew install lynx'
     require tmux 'brew install tmux'
-    require reattach-to-user-namespace 'brew install reattach-to-user-namespace'
+    # require reattach-to-user-namespace 'brew install reattach-to-user-namespace'
     require go 'brew install go'
     require tree 'brew install tree'
     require subl "${BASEDIR}/sublimetext/install.sh"

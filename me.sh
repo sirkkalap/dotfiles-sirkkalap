@@ -21,6 +21,7 @@ mkdir -p ~/.paths.d
 mkdir -p ~/.env.d
 echo "~/bin" >~/.paths.d/home_bin
 echo "/opt/homebrew/bin" >~/.paths.d/opt_homebrew_bin
+echo "/opt/homebrew/opt/libpq/bin" >~/.paths.d/opt_homebrew_opt_libpq_bin
 ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
 
 

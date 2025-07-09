@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+source ~/bin/install_utils.sh
+install_utils::init "$0"
 # https://linuxize.com/post/how-to-install-sublime-text-3-on-ubuntu-18-04/
-source ~/bin/utils_sirkkalap.sh
 
-distro=$(utils_sirkkalap::distro)
 
 if [[ "${distro}" == Ubuntu* ]]; then
     sudo apt update

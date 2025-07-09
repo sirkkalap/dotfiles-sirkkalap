@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-source ~/bin/utils_sirkkalap.sh
-
-distro=$(utils_sirkkalap::distro)
+source ~/bin/install_utils.sh
+install_utils::init "$0"
 
 if [[ "${distro}" == Ubuntu* ]]; then
     echo "Sorry, I do not know how to install GeekTools on Ubuntu yet..."

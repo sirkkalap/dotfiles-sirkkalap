@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+source ~/bin/install_utils.sh
+install_utils::init "$0"
 
-source ~/bin/utils_sirkkalap.sh
 
-distro=$(utils_sirkkalap::distro)
 
 if [[ "${distro}" == Ubuntu* ]]; then
     echo "Sorry, I do not know how to install leiningen on Ubuntu yet..."

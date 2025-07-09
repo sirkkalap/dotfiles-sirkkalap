@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
+source ~/bin/install_utils.sh
+install_utils::init "$0"
 
-BASEDIR=$(cd $(dirname $0); /bin/pwd)
 
-source ~/bin/utils_sirkkalap.sh
 
-distro=$(utils_sirkkalap::distro)
 
 PACKAGE=jq
 CASK=

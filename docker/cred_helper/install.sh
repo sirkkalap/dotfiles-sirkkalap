@@ -2,14 +2,11 @@
 
 # https://github.com/docker/docker-credential-helpers
 set -e
-BASEDIR=$(cd $(dirname $0); /bin/pwd)
-
-source ~/bin/utils_sirkkalap.sh
+source ~/bin/install_utils.sh
+install_utils::init "$0"
 
 go get github.com/docker/docker-credential-helpers
 cd ${GOPATH}/src/github.com/docker/docker-credential-helpers
-
-distro=$(utils_sirkkalap::distro)
 
 if [[ ${distro} == centos* ]]; then
     service=secretservice

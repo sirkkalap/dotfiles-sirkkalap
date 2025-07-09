@@ -7,7 +7,7 @@ source ~/bin/utils_sirkkalap.sh
 
 distro=$(utils_sirkkalap::distro)
 
-if [[ ${distro} == darvin ]]; then
+if [[ ${distro} == darwin ]]; then
     brew install go
 fi
 

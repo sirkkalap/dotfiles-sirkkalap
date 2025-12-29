@@ -10,6 +10,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew tap adoptopenjdk/openjdk
-    brew install adoptopenjdk8
+    brew install --cask temurin8
 fi

@@ -10,5 +10,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew install dragscroll
+    brew install --cask dragscroll
 fi

@@ -5,7 +5,6 @@ source ~/bin/utils_sirkkalap.sh
 distro=$(utils_sirkkalap::distro)
 
 PACKAGE=virtualbox-extension-pack
-CASK=cask
 
 if [[ "${distro}" == Ubuntu* ]]; then
     echo "Sorry, I do not know how to install $PACKAGE on Ubuntu yet..."
@@ -13,5 +12,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew $CASK install $PACKAGE </dev/null
+    brew install --cask $PACKAGE </dev/null
 fi

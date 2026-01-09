@@ -134,32 +134,47 @@ log-<SNAPSHOT-ID>.txt
 
 ```bash
 ./cold-archive.sh \
-  --paths paths.txt \
   --dest /Volumes/Arkisto \
   --checksums ~/ArchiveManifests \
   --id <SNAPSHOT-ID> \
   --verify
 ```
 
-Huom: `--paths`-parametria ei käytetä verify-vaiheessa, mutta se pidetään mukana käyttöliittymän yhtenäisyyden vuoksi.
-
-Tämä lukee koko arkiston ja vertaa sen sisältöä manifestiin.
+Verify-vaihe ei vaadi enää `--paths`-parametria. Tarvitaan vain snapshotin sijainti ja manifest.
 
 ---
 
 ## Self-test
 
+Self-testit on erotettu omaan tiedostoonsa, jotta pääskripti pysyy luettavana:
+
+```
+cold-archive.selftest.sh
+```
+
+Ajo:
+
 ```bash
 ./cold-archive.sh --self-test
 ```
 
-Ajaa sisäisen testin, joka varmistaa että:
+Self-test tekee mm:
 
-- dry-run toimii
-- sync luo snapshotin ja manifestin
-- verify tunnistaa ehjän datan
-- verify epäonnistuu jos dataa muutetaan
+- dry-run (ei muutoksia)
+- sync (luo snapshotin ja manifestin)
+- assert: lähde ja arkisto tuottavat samat checksumit
+- verify (ehjä data → ok)
+- verify (rikottu data → epäonnistuu)
 
+### Debug-tila self-testeille
+
+Jos haluat säilyttää testin luoman temppidatan debuggausta varten:
+
+```bash
+COLD_ARCHIVE_KEEP_TMP=1 ./cold-archive.sh --self-test
+```
+
+Tällöin skripti tulostaa temp-hakemiston polun eikä poista sitä ajon lopussa.
 ---
 
 ## Arkistointifilosofia
@@ -186,5 +201,5 @@ MIT. Katso `LICENSE`.
 
 ## Tekijät
 
-- Päätekijä: (lisää nimesi tähän)
+- Päätekijä: sirpete@iki.fi
 - Additional contributor: ChatGPT (OpenAI)

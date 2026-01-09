@@ -137,26 +137,43 @@ MANIFEST="$CS_DIR/manifest-$SNAP_ID.sha256"
 PLAN="$CS_DIR/plan-$SNAP_ID.txt"
 LOG="$CS_DIR/log-$SNAP_ID.txt"
 
-# VERIFY-only fast path: ei vaadi --paths
-if [[ $DO_VERIFY -eq 1 && $DO_SYNC -eq 0 && $DO_DRYRUN -eq 0 ]]; then
-  echo
-  echo "== VERIFY: tarkistetaan manifestia vasten =="
+normalize_path() {
+  local p="$1"
+  # shellcheck disable=SC2086
+  p=$(eval echo "$p")
+  echo "$p"
+}
 
-  # Varmista, että DEST_SNAP on asetettu (set -u -turva)
-  if [[ -z "${DEST_SNAP:-}" ]]; then
-    DEST_SNAP="$DEST_ROOT/ColdArchive/$SNAP_ID"
-  fi
+validate_paths() {
+  local errors=0
+  local p src
 
-  [[ -d "$DEST_SNAP" ]] || die "Kohdesnapshotia ei löydy: $DEST_SNAP"
-  [[ -f "$MANIFEST" ]] || die "Manifestia ei löydy: $MANIFEST (anna oikea --id tai käytä samaa checksums-hakemistoa)"
+  for p in "${RAW_PATHS[@]}"; do
+    src="$(normalize_path "$p")"
 
-  (
-    cd "$DEST_SNAP"
-    shasum -a 256 -c "$MANIFEST"
-  )
-  echo "VERIFY ok."
-  exit 0
-fi
+    if [[ ! -e "$src" ]]; then
+      echo "Virhe: Polku ei löydy: $src" >&2
+      errors=$((errors + 1))
+      continue
+    fi
+
+    if [[ ! -r "$src" ]]; then
+      echo "Virhe: Ei lukuoikeutta polkuun: $src" >&2
+      errors=$((errors + 1))
+      continue
+    fi
+
+    if [[ -d "$src" && ! -x "$src" ]]; then
+      echo "Virhe: Hakemisto ei ole selattavissa (puuttuu x-oikeus): $src" >&2
+      errors=$((errors + 1))
+      continue
+    fi
+  done
+
+  [[ $errors -eq 0 ]] || die "Polkulistan validointi epäonnistui ($errors virhettä)"
+}
+
+if [[ $DO_DRYRUN -eq 1 || $DO_SYNC -eq 1 ]]; then
 
 # Kerää polut: poista tyhjät rivit ja kommentit (Bash 3.2 yhteensopiva, ei mapfile)
 RAW_PATHS=()
@@ -185,12 +202,10 @@ done < "$PATHS_FILE"
 
 [[ ${#RAW_PATHS[@]} -gt 0 ]] || die "Polkulista on tyhjä: $PATHS_FILE"
 
-normalize_path() {
-  local p="$1"
-  # shellcheck disable=SC2086
-  p=$(eval echo "$p")
-  echo "$p"
-}
+# Validoidaan polut ennen operaatioita (dry-run/copy)
+if [[ $DO_DRYRUN -eq 1 || $DO_SYNC -eq 1 ]]; then
+  validate_paths
+fi
 
 echo "Snapshot: $SNAP_ID"
 echo "Kohde:    $DEST_SNAP"
@@ -304,7 +319,8 @@ if [[ $DO_SYNC -eq 1 ]]; then
 
   echo "Manifest luotu: $MANIFEST" | tee -a "$LOG"
   echo "COPY done." | tee -a "$LOG"
-fi
+fi  # DO_SYNC
+fi  # DO_DRYRUN/DO_SYNC (paths-pohjaiset operaatiot)
 
 if [[ $DO_VERIFY -eq 1 ]]; then
   echo

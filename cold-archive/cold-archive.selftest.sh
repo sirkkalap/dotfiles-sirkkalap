@@ -6,19 +6,35 @@ set -euo pipefail
 run_self_test() {
   local script="${1:?missing path to cold-archive.sh}"
 
-  local t0
-  t0=$(date +%s)
+  now_ms() {
+    # Millisekunnit Pythonilla (macOS: python3 yleensä saatavilla; fallback python)
+    if command -v python3 >/dev/null 2>&1; then
+      python3 - <<'PY'
+import time
+print(int(time.time() * 1000))
+PY
+      return
+    fi
+    python - <<'PY'
+import time
+print(int(time.time() * 1000))
+PY
+  }
+
+  local t0_ms
+  t0_ms=$(now_ms)
 
   phase_start() {
     phase_name="$1"
-    phase_t0=$(date +%s)
+    phase_t0=$(now_ms)
     echo "- $phase_name"
   }
 
   phase_end() {
-    local t1
-    t1=$(date +%s)
-    echo "  (kesto) $phase_name: $((t1 - phase_t0))s"
+    local t1_ms
+    t1_ms=$(now_ms)
+    local dt_ms=$((t1_ms - phase_t0))
+    echo "  (kesto) $phase_name: ${dt_ms}ms"
   }
 
   local phase_name=""
@@ -78,12 +94,49 @@ run_self_test() {
     [[ $rc -ne 0 ]]
   }
 
+  phase_start "paths-validate: puuttuva polku failaa"
+  local bad_paths_missing="$tmp_root/paths-missing.txt"
+  {
+    echo "# test paths (missing)"
+    echo "$src_root/Dir A"
+    echo "$tmp_root/does-not-exist"
+  } > "$bad_paths_missing"
+
+  run_fail "$script" --paths "$bad_paths_missing" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --dry-run \
+    || { echo "Virhe: SELF-TEST: dry-run ei epäonnistunut puuttuvalla polulla" >&2; exit 1; }
+  phase_end
+
+  phase_start "paths-validate: ei lukuoikeutta failaa"
+  local no_access_dir="$tmp_root/no-access"
+  mkdir -p "$no_access_dir"
+  chmod 000 "$no_access_dir"
+
+  local bad_paths_perm="$tmp_root/paths-noaccess.txt"
+  {
+    echo "# test paths (no access)"
+    echo "$src_root/Dir A"
+    echo "$no_access_dir"
+  } > "$bad_paths_perm"
+
+  run_fail "$script" --paths "$bad_paths_perm" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --dry-run \
+    || { echo "Virhe: SELF-TEST: dry-run ei epäonnistunut ilman lukuoikeutta" >&2; exit 1; }
+
+  # Palauta oikeudet, jotta cleanup toimii varmasti
+  chmod 700 "$no_access_dir" || true
+  phase_end
+
   phase_start "dry-run"
   run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --dry-run
   phase_end
 
   phase_start "copy (initial)"
   run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy
+  phase_end
+
+  phase_start "plan-file: plan-$snap_id.txt syntyy"
+  local plan_file="$cs_root/plan-$snap_id.txt"
+  [[ -f "$plan_file" ]] || { echo "Virhe: SELF-TEST: plan-file puuttuu: $plan_file" >&2; exit 1; }
+  [[ -s "$plan_file" ]] || { echo "Virhe: SELF-TEST: plan-file on tyhjä: $plan_file" >&2; exit 1; }
   phase_end
 
   phase_start "symlink-test: linkit säilyvät linkkeinä"
@@ -250,9 +303,9 @@ run_self_test() {
     || { echo "Virhe: SELF-TEST: verify ei epäonnistunut vaikka tiedostoa muutettiin" >&2; exit 1; }
   phase_end
 
-  local t_end
-  t_end=$(date +%s)
-  echo "  (kesto) self-test yhteensä: $((t_end - t0))s"
+  local t_end_ms
+  t_end_ms=$(now_ms)
+  echo "  (kesto) self-test yhteensä: $((t_end_ms - t0_ms))ms"
 
   cleanup
   trap - EXIT

@@ -106,7 +106,7 @@ self_test() {
 
   mkdir -p "$src_root" "$dest_root" "$cs_root"
 
-  cleanup() { rm -rf "$tmp_root"; }
+  cleanup() { rm -rf "${tmp_root:-}"; }
   trap cleanup EXIT
 
   # Luo testidata (myös välilyöntejä poluissa)
@@ -159,6 +159,7 @@ self_test() {
   run_fail "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify \
     || die "SELF-TEST: verify ei epäonnistunut vaikka tiedostoa muutettiin"
 
+  trap - EXIT
   echo "SELF-TEST ok"
 }
 

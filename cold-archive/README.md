@@ -68,6 +68,16 @@ Polkulista on tavallinen tekstitiedosto:
 
 ## Peruskäyttö
 
+### Apu ja kaikki optiot
+
+```bash
+./cold-archive.sh --help
+```
+
+Tulostaa kaikki parametrit, toiminnot ja esimerkkikäytön.
+
+---
+
 ### 1. Dry-run (suunnitelman tarkistus)
 
 ```bash
@@ -91,6 +101,18 @@ Näyttää mitä kopioitaisiin ja antaa karkean kokoarvion.
   --checksums ~/ArchiveManifests \
   --sync
 ```
+
+Esimerkki, jossa myös manifestit tallennetaan samalle arkistolevylle:
+
+```bash
+./cold-archive.sh \
+  --paths paths.txt \
+  --dest /Volumes/Arkisto \
+  --checksums /Volumes/Arkisto/Manifests \
+  --sync
+```
+
+(Teknisesti toimiva, mutta arkistokäytössä suositellaan silti säilyttämään manifestit lisäksi myös eri levyllä tai pilvessä.)
 
 Tämä luo rakenteen:
 
@@ -118,6 +140,8 @@ log-<SNAPSHOT-ID>.txt
   --id <SNAPSHOT-ID> \
   --verify
 ```
+
+Huom: `--paths`-parametria ei käytetä verify-vaiheessa, mutta se pidetään mukana käyttöliittymän yhtenäisyyden vuoksi.
 
 Tämä lukee koko arkiston ja vertaa sen sisältöä manifestiin.
 

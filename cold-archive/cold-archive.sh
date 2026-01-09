@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Käyttö:
-  cold-archive.sh --paths FILE --dest DEST_ROOT --checksums DIR [--dry-run] [--sync] [--verify] [--id NAME]
+  cold-archive.sh --paths FILE --dest DEST_ROOT --checksums DIR [--dry-run] [--sync] [--verify] [--id NAME] [--self-test]
 
 Parametrit:
   --paths FILE        Tiedosto, jossa polut (yksi per rivi). # kommentit sallittu.
@@ -14,11 +14,13 @@ Parametrit:
   --dry-run           Näytä mitä tehtäisiin (ei muutoksia)
   --sync              Suorita kopiointi rsyncillä
   --verify            Tarkista kohde manifestia vasten (sha256)
+  --self-test         Aja sisäänrakennetut perus-testit (ei vaadi erillisiä työkaluja)
 
 Esimerkkejä:
   ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --dry-run
   ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --sync
   ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --verify --id 20260109-120000
+  ./cold-archive.sh --self-test
 EOF
 }
 
@@ -31,6 +33,7 @@ SNAP_ID=""
 DO_DRYRUN=0
 DO_SYNC=0
 DO_VERIFY=0
+DO_SELFTEST=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -41,22 +44,99 @@ while [[ $# -gt 0 ]]; do
     --dry-run) DO_DRYRUN=1; shift ;;
     --sync) DO_SYNC=1; shift ;;
     --verify) DO_VERIFY=1; shift ;;
+    --self-test) DO_SELFTEST=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) die "Tuntematon parametri: $1" ;;
   esac
 done
 
-[[ -n "$PATHS_FILE" ]] || die "--paths puuttuu"
-[[ -n "$DEST_ROOT" ]] || die "--dest puuttuu"
-[[ -n "$CS_DIR" ]] || die "--checksums puuttuu"
-[[ -f "$PATHS_FILE" ]] || die "Polkutiedostoa ei löydy: $PATHS_FILE"
+if [[ $DO_SELFTEST -eq 0 ]]; then
+  [[ -n "$PATHS_FILE" ]] || die "--paths puuttuu"
+  [[ -n "$DEST_ROOT" ]] || die "--dest puuttuu"
+  [[ -n "$CS_DIR" ]] || die "--checksums puuttuu"
+  [[ -f "$PATHS_FILE" ]] || die "Polkutiedostoa ei löydy: $PATHS_FILE"
+fi
+
+if [[ $DO_DRYRUN -eq 0 && $DO_SYNC -eq 0 && $DO_VERIFY -eq 0 && $DO_SELFTEST -eq 0 ]]; then
+  die "Anna vähintään yksi toiminto: --dry-run tai --sync tai --verify tai --self-test"
+fi
 
 if [[ -z "$SNAP_ID" ]]; then
   SNAP_ID="$(date +"%Y%m%d-%H%M%S")"
 fi
 
-if [[ $DO_DRYRUN -eq 0 && $DO_SYNC -eq 0 && $DO_VERIFY -eq 0 ]]; then
-  die "Anna vähintään yksi toiminto: --dry-run tai --sync tai --verify"
+self_test() {
+  echo "== SELF-TEST: cold-archive.sh perus-testit =="
+
+  local tmp_root
+  tmp_root="$(mktemp -d)"
+  local src_root="$tmp_root/src"
+  local dest_root="$tmp_root/dest"
+  local cs_root="$tmp_root/checksums"
+  local paths_file="$tmp_root/paths.txt"
+  local snap_id="TEST-$(date +%s)"
+
+  mkdir -p "$src_root" "$dest_root" "$cs_root"
+
+  cleanup() { rm -rf "$tmp_root"; }
+  trap cleanup EXIT
+
+  # Luo testidata (myös välilyöntejä poluissa)
+  mkdir -p "$src_root/Dir A/Sub Dir"
+  printf "hello\n" > "$src_root/Dir A/file 1.txt"
+  dd if=/dev/zero of="$src_root/Dir A/Sub Dir/big.bin" bs=1024 count=128 >/dev/null 2>&1
+
+  # Polkulista
+  {
+    echo "# test paths"
+    echo "$src_root/Dir A"
+  } > "$paths_file"
+
+  # Apu: aja komento ja tarkista exit
+  run_ok() {
+    "$@" >/dev/null
+  }
+
+  run_fail() {
+    set +e
+    "$@" >/dev/null 2>&1
+    local rc=$?
+    set -e
+    [[ $rc -ne 0 ]]
+  }
+
+  echo "- dry-run"
+  run_ok "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --dry-run
+
+  echo "- sync"
+  run_ok "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --sync
+
+  local manifest="$cs_root/manifest-$snap_id.sha256"
+  local snap_dir="$dest_root/ColdArchive/$snap_id"
+
+  [[ -f "$manifest" ]] || die "SELF-TEST: manifest puuttuu"
+  [[ -d "$snap_dir" ]] || die "SELF-TEST: snapshot-hakemisto puuttuu"
+
+  echo "- verify (ok)"
+  run_ok "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify
+
+  echo "- verify (pitäis epäonnistua jos data muuttuu)"
+  printf "changed\n" >> "$snap_dir/./$src_root/Dir A/file 1.txt" 2>/dev/null || true
+  # Yllä oleva polku ei välttämättä täsmää kaikissa ympäristöissä, joten etsitään tiedosto kohteesta ja rikotaan se varmasti
+  local target_file
+  target_file="$(find "$snap_dir" -type f -name 'file 1.txt' -print -quit)"
+  [[ -n "$target_file" ]] || die "SELF-TEST: target file puuttuu"
+  printf "changed\n" >> "$target_file"
+
+  run_fail "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify \
+    || die "SELF-TEST: verify ei epäonnistunut vaikka tiedostoa muutettiin"
+
+  echo "SELF-TEST ok"
+}
+
+if [[ $DO_SELFTEST -eq 1 ]]; then
+  self_test
+  exit 0
 fi
 
 mkdir -p "$CS_DIR"

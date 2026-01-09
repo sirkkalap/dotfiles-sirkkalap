@@ -79,10 +79,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ $DO_SELFTEST -eq 0 ]]; then
-  [[ -n "$PATHS_FILE" ]] || die "--paths puuttuu"
   [[ -n "$DEST_ROOT" ]] || die "--dest puuttuu"
   [[ -n "$CS_DIR" ]] || die "--checksums puuttuu"
-  [[ -f "$PATHS_FILE" ]] || die "Polkutiedostoa ei löydy: $PATHS_FILE"
+
+  # --paths vaaditaan vain dry-run/sync -ajoissa
+  if [[ $DO_DRYRUN -eq 1 || $DO_SYNC -eq 1 ]]; then
+    [[ -n "$PATHS_FILE" ]] || die "--paths puuttuu"
+    [[ -f "$PATHS_FILE" ]] || die "Polkutiedostoa ei löydy: $PATHS_FILE"
+  fi
 fi
 
 if [[ $DO_DRYRUN -eq 0 && $DO_SYNC -eq 0 && $DO_VERIFY -eq 0 && $DO_SELFTEST -eq 0 ]]; then
@@ -93,11 +97,18 @@ if [[ -z "$SNAP_ID" ]]; then
   SNAP_ID="$(date +"%Y%m%d-%H%M%S")"
 fi
 
+# Kohdesnapshotin polku (tarvitaan myös verify-only -ajossa ennen polkulistan lukua)
+if [[ $DO_SELFTEST -eq 0 ]]; then
+  DEST_SNAP="$DEST_ROOT/ColdArchive/$SNAP_ID"
+fi
+
 self_test() {
   echo "== SELF-TEST: cold-archive.sh perus-testit =="
 
   local tmp_root
   tmp_root="$(mktemp -d)"
+  local keep_tmp="${COLD_ARCHIVE_KEEP_TMP:-0}"
+  echo "  (tmp) $tmp_root"
   local src_root="$tmp_root/src"
   local dest_root="$tmp_root/dest"
   local cs_root="$tmp_root/checksums"
@@ -106,7 +117,13 @@ self_test() {
 
   mkdir -p "$src_root" "$dest_root" "$cs_root"
 
-  cleanup() { rm -rf "${tmp_root:-}"; }
+  cleanup() {
+    if [[ "$keep_tmp" == "1" ]]; then
+      echo "  (tmp säilytetty) $tmp_root"
+      return
+    fi
+    rm -rf "${tmp_root:-}"
+  }
   trap cleanup EXIT
 
   # Luo testidata (myös välilyöntejä poluissa)
@@ -145,6 +162,38 @@ self_test() {
   [[ -f "$manifest" ]] || die "SELF-TEST: manifest puuttuu"
   [[ -d "$snap_dir" ]] || die "SELF-TEST: snapshot-hakemisto puuttuu"
 
+  echo "- assert: src ja dst tuottavat samat checksumit"
+
+  local src_manifest="$tmp_root/src-manifest.sha256"
+  local dst_manifest="$tmp_root/dst-manifest.sha256"
+  local diff_out="$tmp_root/manifest.diff"
+
+  # Lähde: vain valittu polku (Dir A) relatiivisilla poluilla
+  (
+    cd "$src_root"
+    find "./Dir A" -type f -print0 \
+      | LC_ALL=C sort -z \
+      | xargs -0 shasum -a 256
+  ) > "$src_manifest"
+
+  # Kohde: sama alipuupolku snapshotin sisältä.
+  # Arkisto säilyttää absoluuttisen polun ilman johtavaa /, joten mennään sen alle.
+  local archived_src_root="$snap_dir/${src_root#/}"
+  [[ -d "$archived_src_root" ]] || die "SELF-TEST: archived_src_root puuttuu: $archived_src_root"
+
+  (
+    cd "$archived_src_root"
+    find "./Dir A" -type f -print0 \
+      | LC_ALL=C sort -z \
+      | xargs -0 shasum -a 256
+  ) > "$dst_manifest"
+
+  if ! diff -u "$src_manifest" "$dst_manifest" > "$diff_out"; then
+    echo "SELF-TEST: src- ja dst-checksumit eivät täsmää. Diff: $diff_out" >&2
+    [[ "$keep_tmp" == "1" ]] && echo "  (tmp säilytetty) $tmp_root" >&2
+    die "SELF-TEST: src- ja dst-checksumit eivät täsmää"
+  fi
+
   echo "- verify (ok)"
   run_ok "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify
 
@@ -159,6 +208,7 @@ self_test() {
   run_fail "$0" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify \
     || die "SELF-TEST: verify ei epäonnistunut vaikka tiedostoa muutettiin"
 
+  cleanup
   trap - EXIT
   echo "SELF-TEST ok"
 }
@@ -172,6 +222,22 @@ mkdir -p "$CS_DIR"
 MANIFEST="$CS_DIR/manifest-$SNAP_ID.sha256"
 PLAN="$CS_DIR/plan-$SNAP_ID.txt"
 LOG="$CS_DIR/log-$SNAP_ID.txt"
+
+# VERIFY-only fast path: ei vaadi --paths
+if [[ $DO_VERIFY -eq 1 && $DO_SYNC -eq 0 && $DO_DRYRUN -eq 0 ]]; then
+  echo
+  echo "== VERIFY: tarkistetaan manifestia vasten =="
+
+  [[ -d "$DEST_SNAP" ]] || die "Kohdesnapshotia ei löydy: $DEST_SNAP"
+  [[ -f "$MANIFEST" ]] || die "Manifestia ei löydy: $MANIFEST (anna oikea --id tai käytä samaa checksums-hakemistoa)"
+
+  (
+    cd "$DEST_SNAP"
+    shasum -a 256 -c "$MANIFEST"
+  )
+  echo "VERIFY ok."
+  exit 0
+fi
 
 # Kerää polut: poista tyhjät rivit ja kommentit (Bash 3.2 yhteensopiva, ei mapfile)
 RAW_PATHS=()
@@ -213,8 +279,7 @@ normalize_path() {
   echo "$p"
 }
 
-# Muodosta kohdehakemisto snapshotille
-DEST_SNAP="$DEST_ROOT/ColdArchive/$SNAP_ID"
+# Muodosta kohdehakemisto snapshotille (DEST_SNAP on määritelty aiemmin)
 
 echo "Snapshot: $SNAP_ID"
 echo "Kohde:    $DEST_SNAP"

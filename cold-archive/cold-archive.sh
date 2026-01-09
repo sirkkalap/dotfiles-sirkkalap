@@ -144,8 +144,35 @@ MANIFEST="$CS_DIR/manifest-$SNAP_ID.sha256"
 PLAN="$CS_DIR/plan-$SNAP_ID.txt"
 LOG="$CS_DIR/log-$SNAP_ID.txt"
 
-# Kerää polut: poista tyhjät rivit ja kommentit
-mapfile -t RAW_PATHS < <(sed -e 's/[[:space:]]*$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$PATHS_FILE")
+# Kerää polut: poista tyhjät rivit ja kommentit (Bash 3.2 yhteensopiva, ei mapfile)
+RAW_PATHS=()
+while IFS= read -r line || [[ -n "$line" ]]; do
+  # trimmaa rivin lopun whitespace
+  line="${line%$'\r'}"
+  line="${line%%[[:space:]]}" 2>/dev/null || true
+  # poista trailing whitespace turvallisemmin (bash 3.2)
+  while [[ "$line" == *[[:space:]] ]]; do
+    line="${line%[[:space:]]}"
+  done
+
+  # ohita tyhjät ja kommenttirivit (myös whitespace + #)
+  case "$line" in
+    "" ) continue ;;
+    [[:space:]]* )
+      # jos alkaa whitespace: tarkista kommentti/tyhjä uudestaan
+      local_trim="$line"
+      while [[ "$local_trim" == [[:space:]]* ]]; do
+        local_trim="${local_trim#[[:space:]]}"
+      done
+      [[ -z "$local_trim" ]] && continue
+      [[ "$local_trim" == \#* ]] && continue
+      line="$local_trim"
+      ;;
+    \#* ) continue ;;
+  esac
+
+  RAW_PATHS+=("$line")
+done < "$PATHS_FILE"
 
 [[ ${#RAW_PATHS[@]} -gt 0 ]] || die "Polkulista on tyhjä: $PATHS_FILE"
 

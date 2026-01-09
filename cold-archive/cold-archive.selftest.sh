@@ -6,6 +6,24 @@ set -euo pipefail
 run_self_test() {
   local script="${1:?missing path to cold-archive.sh}"
 
+  local t0
+  t0=$(date +%s)
+
+  phase_start() {
+    phase_name="$1"
+    phase_t0=$(date +%s)
+    echo "- $phase_name"
+  }
+
+  phase_end() {
+    local t1
+    t1=$(date +%s)
+    echo "  (kesto) $phase_name: $((t1 - phase_t0))s"
+  }
+
+  local phase_name=""
+  local phase_t0=0
+
   local tmp_root
   tmp_root="$(mktemp -d)"
   local keep_tmp="${COLD_ARCHIVE_KEEP_TMP:-0}"
@@ -49,11 +67,47 @@ run_self_test() {
     [[ $rc -ne 0 ]]
   }
 
-  echo "- dry-run"
+  phase_start "dry-run"
   run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --dry-run
+  phase_end
 
-  echo "- sync"
-  run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --sync
+  phase_start "copy (initial)"
+  run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy
+  phase_end
+
+  phase_start "delete-test: --delete poistaa orphanin"
+
+  # Luo kohteeseen ylimääräinen tiedosto, jota ei ole lähteessä
+  extra_dir="$dest_root/ColdArchive/$snap_id/${src_root#/}/Dir A"
+  mkdir -p "$extra_dir"
+  printf "orphan\n" > "$extra_dir/orphan.txt"
+
+  [[ -f "$extra_dir/orphan.txt" ]] || { echo "Virhe: SELF-TEST: orphan.txt ei syntynyt" >&2; exit 1; }
+
+  echo "- delete-test: ajetaan --copy --delete"
+  run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy --delete
+
+  if [[ -f "$extra_dir/orphan.txt" ]]; then
+    echo "Virhe: SELF-TEST: --delete ei poistanut orphan.txt" >&2
+    exit 1
+  fi
+  phase_end
+
+  phase_start "delete-test: ilman --delete orphan säilyy"
+  printf "orphan-again\n" > "$extra_dir/orphan.txt"
+  [[ -f "$extra_dir/orphan.txt" ]] || { echo "Virhe: SELF-TEST: orphan.txt ei syntynyt (no-delete)" >&2; exit 1; }
+
+  run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy
+
+  if [[ ! -f "$extra_dir/orphan.txt" ]]; then
+    echo "Virhe: SELF-TEST: ilman --delete orphan.txt ei saanut poistua" >&2
+    exit 1
+  fi
+  phase_end
+
+  # Palauta kohde vastaamaan lähdettä ennen checksum/assert/verify -vaiheita
+  rm -f "$extra_dir/orphan.txt" || true
+  run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy --delete
 
   local manifest="$cs_root/manifest-$snap_id.sha256"
   local snap_dir="$dest_root/ColdArchive/$snap_id"
@@ -61,7 +115,25 @@ run_self_test() {
   [[ -f "$manifest" ]] || { echo "Virhe: SELF-TEST: manifest puuttuu" >&2; exit 1; }
   [[ -d "$snap_dir" ]] || { echo "Virhe: SELF-TEST: snapshot-hakemisto puuttuu" >&2; exit 1; }
 
-  echo "- assert: src ja dst tuottavat samat checksumit"
+  phase_start "idempotency: copy uudestaan samaan id:hen"
+
+  local manifest_before="$tmp_root/manifest.before.sha256"
+  cp "$manifest" "$manifest_before"
+
+  run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy
+
+  if ! diff -u "$manifest_before" "$manifest" >/dev/null; then
+    echo "Virhe: SELF-TEST: idempotenssi rikkoutui: manifest muuttui toisella copy-ajolla" >&2
+    echo "--- manifest diff preview (first 60 lines) ---" >&2
+    diff -u "$manifest_before" "$manifest" | head -n 60 >&2 || true
+    echo "--- end preview ---" >&2
+    [[ "$keep_tmp" == "1" ]] && echo "  (tmp säilytetty) $tmp_root" >&2
+    exit 1
+  fi
+
+  phase_end
+
+  phase_start "assert: src vs dst checksummat"
 
   local src_manifest="$tmp_root/src-manifest.sha256"
   local dst_manifest="$tmp_root/dst-manifest.sha256"
@@ -86,15 +158,20 @@ run_self_test() {
 
   if ! diff -u "$src_manifest" "$dst_manifest" > "$diff_out"; then
     echo "SELF-TEST: src- ja dst-checksumit eivät täsmää. Diff: $diff_out" >&2
+    echo "--- diff preview (first 60 lines) ---" >&2
+    head -n 60 "$diff_out" >&2 || true
+    echo "--- end preview ---" >&2
     [[ "$keep_tmp" == "1" ]] && echo "  (tmp säilytetty) $tmp_root" >&2
     echo "Virhe: SELF-TEST: src- ja dst-checksumit eivät täsmää" >&2
     exit 1
   fi
+  phase_end
 
-  echo "- verify (ok)"
+  phase_start "verify (ok)"
   run_ok "$script" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify
+  phase_end
 
-  echo "- verify (pitäis epäonnistua jos data muuttuu)"
+  phase_start "verify (fail kun data muuttuu)"
   local target_file
   target_file="$(find "$snap_dir" -type f -name 'file 1.txt' -print -quit)"
   [[ -n "$target_file" ]] || { echo "Virhe: SELF-TEST: target file puuttuu" >&2; exit 1; }
@@ -102,6 +179,11 @@ run_self_test() {
 
   run_fail "$script" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --verify \
     || { echo "Virhe: SELF-TEST: verify ei epäonnistunut vaikka tiedostoa muutettiin" >&2; exit 1; }
+  phase_end
+
+  local t_end
+  t_end=$(date +%s)
+  echo "  (kesto) self-test yhteensä: $((t_end - t0))s"
 
   cleanup
   trap - EXIT

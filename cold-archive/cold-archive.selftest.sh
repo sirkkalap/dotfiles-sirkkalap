@@ -51,6 +51,17 @@ run_self_test() {
   printf "hello\n" > "$src_root/Dir A/file 1.txt"
   dd if=/dev/zero of="$src_root/Dir A/Sub Dir/big.bin" bs=1024 count=128 >/dev/null 2>&1
 
+  # Symlinkit ja oikeudet
+  ln -s "file 1.txt" "$src_root/Dir A/link-to-file.txt"
+  ln -s "Sub Dir" "$src_root/Dir A/link-to-dir"
+  ln -s "does-not-exist" "$src_root/Dir A/broken-link"
+
+  printf "secret\n" > "$src_root/Dir A/private.txt"
+  chmod 400 "$src_root/Dir A/private.txt"
+
+  printf "run\n" > "$src_root/Dir A/run.sh"
+  chmod 755 "$src_root/Dir A/run.sh"
+
   # Polkulista
   {
     echo "# test paths"
@@ -73,6 +84,31 @@ run_self_test() {
 
   phase_start "copy (initial)"
   run_ok "$script" --paths "$paths_file" --dest "$dest_root" --checksums "$cs_root" --id "$snap_id" --copy
+  phase_end
+
+  phase_start "symlink-test: linkit säilyvät linkkeinä"
+
+  local archived_src_root_symlink="$dest_root/ColdArchive/$snap_id/${src_root#/}/Dir A"
+
+  [[ -L "$archived_src_root_symlink/link-to-file.txt" ]] || { echo "Virhe: SELF-TEST: link-to-file ei ole symlink" >&2; exit 1; }
+  [[ -L "$archived_src_root_symlink/link-to-dir" ]] || { echo "Virhe: SELF-TEST: link-to-dir ei ole symlink" >&2; exit 1; }
+  [[ -L "$archived_src_root_symlink/broken-link" ]] || { echo "Virhe: SELF-TEST: broken-link ei ole symlink" >&2; exit 1; }
+
+  phase_end
+
+  phase_start "permission-test: oikeudet säilyvät"
+
+  local src_perm_private dst_perm_private src_perm_run dst_perm_run
+
+  src_perm_private=$(stat -f "%p" "$src_root/Dir A/private.txt")
+  dst_perm_private=$(stat -f "%p" "$archived_src_root_symlink/private.txt")
+
+  src_perm_run=$(stat -f "%p" "$src_root/Dir A/run.sh")
+  dst_perm_run=$(stat -f "%p" "$archived_src_root_symlink/run.sh")
+
+  [[ "$src_perm_private" == "$dst_perm_private" ]] || { echo "Virhe: SELF-TEST: private.txt oikeudet eivät täsmää" >&2; exit 1; }
+  [[ "$src_perm_run" == "$dst_perm_run" ]] || { echo "Virhe: SELF-TEST: run.sh oikeudet eivät täsmää" >&2; exit 1; }
+
   phase_end
 
   phase_start "delete-test: --delete poistaa orphanin"
@@ -126,6 +162,39 @@ run_self_test() {
     echo "Virhe: SELF-TEST: idempotenssi rikkoutui: manifest muuttui toisella copy-ajolla" >&2
     echo "--- manifest diff preview (first 60 lines) ---" >&2
     diff -u "$manifest_before" "$manifest" | head -n 60 >&2 || true
+    echo "--- end preview ---" >&2
+    [[ "$keep_tmp" == "1" ]] && echo "  (tmp säilytetty) $tmp_root" >&2
+    exit 1
+  fi
+
+  phase_end
+
+  phase_start "rsync-diff: --dry-run --itemize-changes ei saa raportoida muutoksia"
+
+  # Verrataan rsyncin itemize-changes -tulosteella, että lähde ja kohde ovat identtiset.
+  # Unchanged-ajossa rsync ei tulosta mitään, joten mikä tahansa output = regressio.
+  local rsync_log="$tmp_root/rsync-diff.log"
+
+  local archived_src_root_for_rsync="$snap_dir/${src_root#/}"
+  local src_dir_for_rsync="$src_root/Dir A"
+  local dst_dir_for_rsync="$archived_src_root_for_rsync/Dir A"
+
+  [[ -d "$src_dir_for_rsync" ]] || { echo "Virhe: SELF-TEST: src_dir puuttuu: $src_dir_for_rsync" >&2; exit 1; }
+  [[ -d "$dst_dir_for_rsync" ]] || { echo "Virhe: SELF-TEST: dst_dir puuttuu: $dst_dir_for_rsync" >&2; exit 1; }
+
+  rsync -a --dry-run --itemize-changes "$src_dir_for_rsync/" "$dst_dir_for_rsync/" >"$rsync_log" 2>&1 || {
+    echo "Virhe: SELF-TEST: rsync-diff ajossa virhe" >&2
+    echo "--- rsync log preview (first 80 lines) ---" >&2
+    head -n 80 "$rsync_log" >&2 || true
+    echo "--- end preview ---" >&2
+    [[ "$keep_tmp" == "1" ]] && echo "  (tmp säilytetty) $tmp_root" >&2
+    exit 1
+  }
+
+  if [[ -s "$rsync_log" ]]; then
+    echo "Virhe: SELF-TEST: rsync raportoi muutoksia idempotentissä vertailussa" >&2
+    echo "--- rsync diff preview (first 80 lines) ---" >&2
+    head -n 80 "$rsync_log" >&2 || true
     echo "--- end preview ---" >&2
     [[ "$keep_tmp" == "1" ]] && echo "  (tmp säilytetty) $tmp_root" >&2
     exit 1

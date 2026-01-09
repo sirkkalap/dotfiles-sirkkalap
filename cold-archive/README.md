@@ -99,7 +99,7 @@ Näyttää mitä kopioitaisiin ja antaa karkean kokoarvion.
   --paths paths.txt \
   --dest /Volumes/Arkisto \
   --checksums ~/ArchiveManifests \
-  --sync
+  --copy
 ```
 
 Esimerkki, jossa myös manifestit tallennetaan samalle arkistolevylle:
@@ -109,10 +109,22 @@ Esimerkki, jossa myös manifestit tallennetaan samalle arkistolevylle:
   --paths paths.txt \
   --dest /Volumes/Arkisto \
   --checksums /Volumes/Arkisto/Manifests \
-  --sync
+  --copy
 ```
 
 (Teknisesti toimiva, mutta arkistokäytössä suositellaan silti säilyttämään manifestit lisäksi myös eri levyllä tai pilvessä.)
+
+Jos haluat peilata hakemistoja niin, että myös poistuneet tiedostot poistetaan kohteesta, käytä `--delete`:
+
+```bash
+./cold-archive.sh \
+  --paths paths.txt \
+  --dest /Volumes/Arkisto \
+  --checksums ~/ArchiveManifests \
+  --copy --delete
+```
+
+⚠️ Huom: `--delete` on tehokas ja voi poistaa dataa kohteesta. Kylmäarkistossa sitä kannattaa käyttää harkiten.
 
 Tämä luo rakenteen:
 
@@ -161,7 +173,7 @@ Ajo:
 Self-test tekee mm:
 
 - dry-run (ei muutoksia)
-- sync (luo snapshotin ja manifestin)
+- copy (luo snapshotin ja manifestin)
 - assert: lähde ja arkisto tuottavat samat checksumit
 - verify (ehjä data → ok)
 - verify (rikottu data → epäonnistuu)

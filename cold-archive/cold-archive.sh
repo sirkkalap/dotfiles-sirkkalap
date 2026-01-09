@@ -32,7 +32,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Käyttö:
-  cold-archive.sh --dest DEST_ROOT --checksums DIR [--paths FILE] [--dry-run] [--sync] [--verify] [--id NAME] [--self-test]
+  cold-archive.sh --dest DEST_ROOT --checksums DIR [--paths FILE] [--dry-run] [--copy|--sync] [--delete] [--verify] [--id NAME] [--self-test]
 
 Parametrit:
   --paths FILE        Tiedosto, jossa polut (yksi per rivi). # kommentit sallittu.
@@ -40,14 +40,16 @@ Parametrit:
   --checksums DIR     Hakemisto, johon checksum-manifestit talteen (esim. /Users/me/ArchiveManifests)
   --id NAME           Snapshotin nimi. Oletus: YYYYmmdd-HHMMSS
   --dry-run           Näytä mitä tehtäisiin (ei muutoksia)
-  --sync              Suorita kopiointi rsyncillä
+  --copy              Kopioi (rsync). (--sync toimii aliaksena)
+  --delete            Poistaa kohteesta tiedostot, joita ei enää ole lähteessä (vain --copy/--sync)
   --verify            Tarkista kohde manifestia vasten (sha256). Ei vaadi --paths.
   --self-test         Aja testit (oletus: ./cold-archive.selftest.sh)
 
 Esimerkkejä:
   ./cold-archive.sh --help
   ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --dry-run
-  ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --sync
+  ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --copy
+  ./cold-archive.sh --paths paths.txt --dest /Volumes/Arkisto --checksums ~/Manifests --copy --delete
   ./cold-archive.sh --dest /Volumes/Arkisto --checksums ~/Manifests --verify --id 20260109-120000
   ./cold-archive.sh --self-test
 EOF
@@ -62,6 +64,7 @@ SNAP_ID=""
 DEST_SNAP=""
 DO_DRYRUN=0
 DO_SYNC=0
+DO_DELETE=0
 DO_VERIFY=0
 DO_SELFTEST=0
 
@@ -73,6 +76,8 @@ while [[ $# -gt 0 ]]; do
     --id) SNAP_ID="${2:-}"; shift 2 ;;
     --dry-run) DO_DRYRUN=1; shift ;;
     --sync) DO_SYNC=1; shift ;;
+    --copy) DO_SYNC=1; shift ;;
+    --delete) DO_DELETE=1; shift ;;
     --verify) DO_VERIFY=1; shift ;;
     --self-test) DO_SELFTEST=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -88,7 +93,7 @@ if [[ $DO_SELFTEST -eq 0 ]]; then
   [[ -n "$DEST_ROOT" ]] || die "--dest puuttuu"
   [[ -n "$CS_DIR" ]] || die "--checksums puuttuu"
 
-  # --paths vaaditaan vain dry-run/sync -ajoissa
+  # --paths vaaditaan vain dry-run/copy/sync -ajoissa
   if [[ $DO_DRYRUN -eq 1 || $DO_SYNC -eq 1 ]]; then
     [[ -n "$PATHS_FILE" ]] || die "--paths puuttuu"
     [[ -f "$PATHS_FILE" ]] || die "Polkutiedostoa ei löydy: $PATHS_FILE"
@@ -96,7 +101,8 @@ if [[ $DO_SELFTEST -eq 0 ]]; then
 fi
 
 if [[ -z "$SNAP_ID" ]]; then
-  SNAP_ID="$(date +"%Y%m%d-%H%M%S")"
+  # ISO-tyylinen aikaleima, tiedostonimeen sopivilla erottimilla
+  SNAP_ID="$(date +"%Y-%m-%dT%H-%M-%S")"
 fi
 
 # Kohdesnapshotin polku (tarvitaan myös verify-only -ajossa ennen polkulistan lukua)
@@ -250,7 +256,7 @@ fi
 
 if [[ $DO_SYNC -eq 1 ]]; then
   echo
-  echo "== SYNC: kopioidaan rsyncillä =="
+  echo "== COPY: kopioidaan rsyncillä =="
   mkdir -p "$DEST_SNAP"
   {
     echo "== $(date -Iseconds) SYNC start =="
@@ -265,11 +271,26 @@ if [[ $DO_SYNC -eq 1 ]]; then
     fi
 
     rel="${src#/}"
-    dest_dir="$DEST_SNAP/$(dirname "$rel")"
-    mkdir -p "$dest_dir"
 
-    echo "Kopioidaan: $src -> $dest_dir/" | tee -a "$LOG"
-    rsync -a --protect-args --info=stats2,progress2 "$src" "$dest_dir/" | tee -a "$LOG"
+    if [[ -d "$src" ]]; then
+      # Hakemisto: peilaa sisällöt kohteessa samaan hakemistoon
+      dest_path="$DEST_SNAP/$rel"
+      mkdir -p "$(dirname "$dest_path")" "$dest_path"
+
+      echo "Kopioidaan (dir): $src/ -> $dest_path/" | tee -a "$LOG"
+      if [[ $DO_DELETE -eq 1 ]]; then
+        rsync -a --delete --protect-args --info=stats2,progress2 "$src/" "$dest_path/" | tee -a "$LOG"
+      else
+        rsync -a --protect-args --info=stats2,progress2 "$src/" "$dest_path/" | tee -a "$LOG"
+      fi
+    else
+      # Yksittäinen tiedosto: kopioi parent-hakemistoon
+      dest_dir="$DEST_SNAP/$(dirname "$rel")"
+      mkdir -p "$dest_dir"
+
+      echo "Kopioidaan (file): $src -> $dest_dir/" | tee -a "$LOG"
+      rsync -a --protect-args --info=stats2,progress2 "$src" "$dest_dir/" | tee -a "$LOG"
+    fi
   done
 
   echo "== SYNC valmis, tehdään manifest (sha256) ==" | tee -a "$LOG"
@@ -282,7 +303,7 @@ if [[ $DO_SYNC -eq 1 ]]; then
   ) > "$MANIFEST"
 
   echo "Manifest luotu: $MANIFEST" | tee -a "$LOG"
-  echo "SYNC done." | tee -a "$LOG"
+  echo "COPY done." | tee -a "$LOG"
 fi
 
 if [[ $DO_VERIFY -eq 1 ]]; then

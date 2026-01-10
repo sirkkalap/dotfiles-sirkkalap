@@ -92,8 +92,8 @@ def run_cmd(
 
 def shasum256_for_tree(root: Path, rel: Path) -> List[Tuple[str, str]]:
     """Palauta lista (hash, './path') deterministisesti, sama muoto kuin shasum -a 256."""
-    # macOS: sama hakemisto voi näkyä /var/... ja /private/var/...; normalisoidaan realpathilla.
-    base = root.resolve()
+    # macOS: sama hakemisto voi näkyä /var/... ja /private/var/...; käytetään realpathia, ei resolve().
+    base = Path(os.path.realpath(str(root)))
     target = base / rel
 
     files: List[Path] = []
@@ -103,7 +103,7 @@ def shasum256_for_tree(root: Path, rel: Path) -> List[Tuple[str, str]]:
 
     # Järjestetään samoin kuin LC_ALL=C sort (byte-order). Python sort on Unicode,
     # mutta Path.as_posix() ja encode('utf-8') antaa deterministisen.
-    files.sort(key=lambda x: x.resolve().relative_to(base).as_posix().encode("utf-8"))
+    files.sort(key=lambda x: Path(os.path.realpath(str(x))).relative_to(base).as_posix().encode("utf-8"))
 
     results: List[Tuple[str, str]] = []
     import hashlib
@@ -113,10 +113,9 @@ def shasum256_for_tree(root: Path, rel: Path) -> List[Tuple[str, str]]:
         with p.open("rb") as f:
             for chunk in iter(lambda: f.read(1024 * 1024), b""):
                 h.update(chunk)
-        relpath = "./" + p.resolve().relative_to(base).as_posix()
+        relpath = "./" + Path(os.path.realpath(str(p))).relative_to(base).as_posix()
         results.append((h.hexdigest(), relpath))
     return results
-
 
 def write_junit(out_path: Path, phases: List[PhaseResult]) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)

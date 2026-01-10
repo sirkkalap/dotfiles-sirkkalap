@@ -1,0 +1,31 @@
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+    ansiColor('xterm')
+  }
+
+  environment {
+    COLD_ARCHIVE_JUNIT_OUT = 'artifacts/selftest.xml'
+  }
+
+  stages {
+    stage('Self-test (Python runner)') {
+      steps {
+        dir('/workspace') {
+          sh 'mkdir -p artifacts'
+          sh './scripts/ci-selftest.sh'
+        }
+      }
+      post {
+        always {
+          dir('/workspace') {
+            junit testResults: 'artifacts/selftest.xml', allowEmptyResults: false
+            archiveArtifacts artifacts: 'artifacts/**', fingerprint: true
+          }
+        }
+      }
+    }
+  }
+}

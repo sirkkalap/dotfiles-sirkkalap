@@ -1,0 +1,9 @@
+workflow-aggregator
+git
+pipeline-stage-view
+pipeline-graph-view
+junit
+timestamper
+ansiColor
+warnings-ng
+configuration-as-code

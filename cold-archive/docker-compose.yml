@@ -1,0 +1,18 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: jenkins/Dockerfile
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Projektin workspace (read-only riittää tälle setille)
+      - ./:/workspace:ro
+    working_dir: /workspace
+
+volumes:
+  jenkins_home:

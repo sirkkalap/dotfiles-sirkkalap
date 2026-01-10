@@ -13,17 +13,17 @@ pipeline {
   stages {
     stage('Self-test (Python runner)') {
       steps {
-        dir('/workspace') {
-          sh 'mkdir -p artifacts'
-          sh './scripts/ci-selftest.sh'
-        }
+        // Synkataan bind-mountattu lähde workspaceen (workspace on jenkins_home-volumen alla ja kirjoitettava)
+        sh 'rsync -a --delete --exclude=.git/ /src/ ./'
+
+        sh 'mkdir -p artifacts'
+        sh './scripts/ci-selftest.sh'
       }
       post {
         always {
-          dir('/workspace') {
-            junit testResults: 'artifacts/selftest.xml', allowEmptyResults: false
-            archiveArtifacts artifacts: 'artifacts/**', fingerprint: true
-          }
+          sh 'ls -la artifacts || true; test -s artifacts/selftest.xml'
+          junit testResults: 'artifacts/selftest.xml', allowEmptyResults: false
+          archiveArtifacts artifacts: 'artifacts/**', fingerprint: true
         }
       }
     }

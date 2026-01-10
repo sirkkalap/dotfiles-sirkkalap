@@ -4,6 +4,6 @@ pipeline-stage-view
 pipeline-graph-view
 junit
 timestamper
-ansiColor
+ansicolor
 warnings-ng
 configuration-as-code

@@ -10,9 +10,9 @@ services:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
     volumes:
       - jenkins_home:/var/jenkins_home
-      # Projektin workspace (read-only riittää tälle setille)
-      - ./:/workspace:ro
-    working_dir: /workspace
+      # Projekti mountataan read-only lähteeksi; buildissä synkataan workspaceen (välttää UID/GID-oikeusongelmat)
+      - ./:/src:ro
+    working_dir: /var/jenkins_home
 
 volumes:
   jenkins_home:

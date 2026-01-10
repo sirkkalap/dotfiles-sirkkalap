@@ -252,6 +252,13 @@ echo "Arvioitu koko yhteensä: $(human_bytes "$TOTAL_BYTES")"
 if [[ $DO_DRYRUN -eq 1 ]]; then
   echo
   echo "== DRY-RUN: rsync suunnitelma =="
+
+  RSYNC_DRY_OPTS=(-a --dry-run --itemize-changes)
+  # -N == --crtimes. Kaikki rsync-buildit eivät tue tätä (esim. Debian/CI).
+  if rsync_supports_flag "--crtimes"; then
+    RSYNC_DRY_OPTS+=(-N)
+  fi
+
   for p in "${RAW_PATHS[@]}"; do
     src="$(normalize_path "$p")"
     if [[ ! -e "$src" ]]; then
@@ -263,7 +270,7 @@ if [[ $DO_DRYRUN -eq 1 ]]; then
     dest_dir="$DEST_SNAP/$(dirname "$rel")"
 
     echo "  rsync '$src' -> '$dest_dir/'"
-    rsync -aN --dry-run --itemize-changes "$src" "$dest_dir/" | head -n 50
+    rsync "${RSYNC_DRY_OPTS[@]}" "$src" "$dest_dir/" | head -n 50
   done
   echo
   echo "Dry-run tehty. Plan: $PLAN"

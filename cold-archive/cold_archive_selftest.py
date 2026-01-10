@@ -131,17 +131,57 @@ def write_junit(out_path: Path, phases: List[PhaseResult]) -> None:
             .replace("'", "&apos;")
         )
 
+    import re
+
+    def phase_group_slug(name: str) -> str:
+        # Jos kaksoispiste, ota ennen sitä
+        if ":" in name:
+            group = name.split(":", 1)[0]
+        else:
+            # Ota ennen ekaa välilyöntiä tai sulkua
+            m = re.match(r"([^\s(]+)", name)
+            group = m.group(1) if m else name
+        # Slugify: pienet kirjaimet, korvaa kaikki ei-aakkosnumeeriset yhdellä viivalla
+        slug = re.sub(r"[^a-z0-9]+", "-", group.lower())
+        slug = slug.strip("-")
+        return f"cold-archive.selftest.{slug}"
+
+    def short_failure_message(text: str) -> str:
+        # Palauta ensimmäinen rivi, max 160 merkkiä
+        if not text:
+            return "phase failed"
+        first_line = text.splitlines()[0]
+        if len(first_line) > 160:
+            return first_line[:157] + "..."
+        return first_line
+
+    def cdata_safe(text: str) -> str:
+        # CDATA ei saa sisältää "]]>", korvataan se splitillä
+        return text.replace("]]>", "]]]]><![CDATA[>")
+
     lines: List[str] = []
     lines.append('<?xml version="1.0" encoding="UTF-8"?>')
     lines.append(f'<testsuite name="cold-archive.selftest" tests="{tests}" failures="{failures}">')
 
+    # tmp_root_str käytetään system-outissa jos tiedossa
+    tmp_root_str = getattr(write_junit, "_tmp_root_str", None)
+
     for p in phases:
         time_s = f"{p.duration_ms / 1000.0:.3f}"
         name = xml_escape(p.name)
-        lines.append(f'  <testcase classname="cold-archive.selftest" name="{name}" time="{time_s}">')
+        classname = xml_escape(phase_group_slug(p.name))
+        lines.append(f'  <testcase classname="{classname}" name="{name}" time="{time_s}">')
         if p.status == "failed":
-            msg = xml_escape(p.message or "phase failed")
-            lines.append(f'    <failure message="{msg}"></failure>')
+            msg = xml_escape(short_failure_message(p.message or "phase failed"))
+            # Varsinainen teksti CDATA:na
+            failure_text = p.message or "phase failed"
+            failure_text = cdata_safe(failure_text)
+            lines.append(f'    <failure message="{msg}"><![CDATA[{failure_text}]]></failure>')
+        # system-out: duration_ms, ja tmp_root jos tiedossa ja failannut
+        sysout = f"duration_ms={p.duration_ms}"
+        if p.status == "failed" and tmp_root_str:
+            sysout += f"\ntmp_root={tmp_root_str}"
+        lines.append(f'    <system-out><![CDATA[{sysout}]]></system-out>')
         lines.append("  </testcase>")
 
     lines.append("</testsuite>")
@@ -180,6 +220,7 @@ def main() -> int:
 
     tmp_root = Path(tempfile.mkdtemp(prefix="tmp."))
     print(f"  (tmp) {tmp_root}")
+    tmp_root_str: str = str(tmp_root)
 
     src_root = tmp_root / "src"
     dest_root = tmp_root / "dest"
@@ -395,6 +436,8 @@ def main() -> int:
         # JUnit (myös epäonnistuneessa ajossa)
         if junit_out:
             try:
+                # tmp_root_str käyttöön write_junitin kautta
+                setattr(write_junit, "_tmp_root_str", tmp_root_str)
                 write_junit(Path(junit_out), phases)
             except Exception as e:  # noqa: BLE001
                 print(f"Virhe: junit-raportin kirjoitus epäonnistui: {e}", file=sys.stderr)

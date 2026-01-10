@@ -29,6 +29,13 @@
 #
 set -euo pipefail
 
+rsync_supports_flag() {
+  local flag="$1"
+  rsync --help 2>/dev/null | grep -q -- "$flag"
+}
+
+# ... muut apufunktiot (die/log/usage) jatkuu ...
+
 usage() {
   cat <<'EOF'
 Käyttö:

@@ -117,6 +117,7 @@ def shasum256_for_tree(root: Path, rel: Path) -> List[Tuple[str, str]]:
         results.append((h.hexdigest(), relpath))
     return results
 
+
 def write_junit(out_path: Path, phases: List[PhaseResult]) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tests = len(phases)
@@ -162,6 +163,14 @@ def write_junit(out_path: Path, phases: List[PhaseResult]) -> None:
     lines: List[str] = []
     lines.append('<?xml version="1.0" encoding="UTF-8"?>')
     lines.append(f'<testsuite name="cold-archive.selftest" tests="{tests}" failures="{failures}">')
+
+    meta = getattr(write_junit, "_meta", {}) or {}
+    lines.append("  <properties>")
+    for k in ("script", "snap_id", "tmp_root"):
+        v = meta.get(k)
+        if v:
+            lines.append(f'    <property name="{xml_escape(str(k))}" value="{xml_escape(str(v))}"/>')
+    lines.append("  </properties>")
 
     # tmp_root_str käytetään system-outissa jos tiedossa
     tmp_root_str = getattr(write_junit, "_tmp_root_str", None)
@@ -438,7 +447,36 @@ def main() -> int:
             try:
                 # tmp_root_str käyttöön write_junitin kautta
                 setattr(write_junit, "_tmp_root_str", tmp_root_str)
+                setattr(
+                    write_junit,
+                    "_meta",
+                    {"script": str(script), "snap_id": snap_id, "tmp_root": tmp_root_str},
+                )
                 write_junit(Path(junit_out), phases)
+
+                if any(p.status == "failed" for p in phases):
+                    debug_out = os.environ.get("COLD_ARCHIVE_DEBUG_OUT", "").strip()
+                    if not debug_out:
+                        debug_out = str(Path(junit_out).parent / "selftest-debug.txt")
+
+                    dbg_path = Path(debug_out)
+                    dbg_path.parent.mkdir(parents=True, exist_ok=True)
+
+                    lines_dbg: List[str] = []
+                    lines_dbg.append(f"script={script}")
+                    lines_dbg.append(f"snap_id={snap_id}")
+                    lines_dbg.append(f"tmp_root={tmp_root_str}")
+                    lines_dbg.append("")
+                    lines_dbg.append("phases:")
+                    for ph in phases:
+                        lines_dbg.append(f"- {ph.name} | {ph.status} | {ph.duration_ms}ms")
+                        if ph.status == "failed" and ph.message:
+                            lines_dbg.append("  --- message ---")
+                            lines_dbg.append(ph.message)
+                            lines_dbg.append("  --- end ---")
+
+                    dbg_path.write_text("\n".join(lines_dbg) + "\n", encoding="utf-8")
+                    print(f"  (debug) {dbg_path}")
             except Exception as e:  # noqa: BLE001
                 print(f"Virhe: junit-raportin kirjoitus epäonnistui: {e}", file=sys.stderr)
 

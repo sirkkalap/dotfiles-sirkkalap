@@ -1,2 +1,3 @@
 #!/bin/sh
-curl http://j.mp/spf13-vim3 -L -o - | sh
+BASEDIR=$(cd "$(dirname "$0")"; pwd)
+exec bash "${BASEDIR}/../spf13-vim.sh"

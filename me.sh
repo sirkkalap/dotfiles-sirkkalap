@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
+# On FreeBSD, install Bash first with: sudo pkg install bash.
 
 WORK=${1:-$HOME/proj}
 
 BASEDIR=$(cd $(dirname $0); /bin/pwd)
 
 source ${BASEDIR}/utils_sirkkalap.sh
+DISTRO=$(utils_sirkkalap::distro)
 
 mkdir -p "$WORK"
 
@@ -21,15 +23,15 @@ mkdir -p ~/.paths.d
 mkdir -p ~/.env.d
 # shellcheck disable=SC2088
 make_path_file home_bin "~/bin"
-make_path_file opt_homebrew_bin "/opt/homebrew/bin"
-make_path_file opt_homebrew_opt_libpq_bin "/opt/homebrew/opt/libpq/bin"
+if [[ ${DISTRO} == darwin ]]; then
+    make_path_file opt_homebrew_bin "/opt/homebrew/bin"
+    make_path_file opt_homebrew_opt_libpq_bin "/opt/homebrew/opt/libpq/bin"
+fi
 # shellcheck disable=SC2088
 make_path_file home_dotdotnet_tools "~/.dotnet/tools"
 ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
 ln -s -f ${WORK}/dotfiles-sirkkalap/install_utils.sh ~/bin/
 
-
-DISTRO=$(utils_sirkkalap::distro)
 
 if [[ ${DISTRO} == centos* ]]; then
     require git 'sudo yum -y install git'
@@ -76,6 +78,12 @@ if [[ ${DISTRO} == darwin ]]; then
     #require pandoc 'brew install pandoc'
 fi
 
+if [[ ${DISTRO} == freebsd ]]; then
+    require git 'sudo pkg install git'
+    require vim 'sudo pkg install vim'
+    require zsh 'sudo pkg install zsh'
+    require tmux 'sudo pkg install tmux'
+fi
 
 cd "$WORK"
 if [[ ! -d dotfiles-sirkkalap ]]; then
@@ -102,8 +110,12 @@ if [[ ! $SHELL == *zsh ]]; then
     echo "Add $(which zsh) to /etc/shells and run chsh -s $(which zsh) to set zsh as default"
 fi
 
-(
-    cd ~/.env.d
-    ln -s -f ~/proj/dotfiles-sirkkalap/dot_env.d/*.sh .
-
-)
+if [[ -d "${BASEDIR}/dot_env.d" ]]; then
+    for env_file in "${BASEDIR}"/dot_env.d/*.sh; do
+        [[ -f "$env_file" ]] || continue
+        if [[ ${DISTRO} == freebsd && ${env_file##*/} == go.sh ]]; then
+            continue
+        fi
+        ln -sf "$env_file" ~/.env.d/
+    done
+fi

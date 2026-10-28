@@ -110,3 +110,18 @@ function utils_sirkkalap::block() {
     echo "$text"
     printf '*%.0s' $(seq 1 $chars); echo; echo
 }
+
+make_path_file() {
+  local name=$1
+  local content=$2
+  local pathfile="$HOME/.paths.d/$name"
+
+  mkdir -p "$HOME/.paths.d"
+
+  echo "$content" > "$pathfile"
+
+  if xattr "$pathfile" 2>/dev/null | grep -q com.apple.provenance; then
+    xattr -d com.apple.provenance "$pathfile" \
+      && echo "✅ Removed provenance from $pathfile"
+  fi
+}

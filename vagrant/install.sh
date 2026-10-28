@@ -5,7 +5,6 @@ install_utils::init "$0"
 
 
 PACKAGE=vagrant
-CASK=cask
 
 if [[ "${distro}" == Ubuntu* ]]; then
     echo "Sorry, I do not know how to install $PACKAGE on Ubuntu yet..."
@@ -13,5 +12,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew $CASK install $PACKAGE </dev/null
+    brew install --cask $PACKAGE </dev/null
 fi

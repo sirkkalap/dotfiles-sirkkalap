@@ -19,9 +19,12 @@ require() {
 mkdir -p ~/bin
 mkdir -p ~/.paths.d
 mkdir -p ~/.env.d
-echo "~/bin" >~/.paths.d/home_bin
-echo "/opt/homebrew/bin" >~/.paths.d/opt_homebrew_bin
-echo "/opt/homebrew/opt/libpq/bin" >~/.paths.d/opt_homebrew_opt_libpq_bin
+# shellcheck disable=SC2088
+make_path_file home_bin "~/bin"
+make_path_file opt_homebrew_bin "/opt/homebrew/bin"
+make_path_file opt_homebrew_opt_libpq_bin "/opt/homebrew/opt/libpq/bin"
+# shellcheck disable=SC2088
+make_path_file home_dotdotnet_tools "~/.dotnet/tools"
 ln -s -f ${WORK}/dotfiles-sirkkalap/utils_sirkkalap.sh ~/bin/
 ln -s -f ${WORK}/dotfiles-sirkkalap/install_utils.sh ~/bin/
 

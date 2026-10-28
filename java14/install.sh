@@ -10,6 +10,6 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew tap adoptopenjdk/openjdk
-    brew install adoptopenjdk14
+    # AdoptOpenJDK 14 is retired; use the Temurin 14 cask instead.
+    brew install --cask temurin@14
 fi

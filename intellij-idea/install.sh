@@ -8,5 +8,5 @@ install_utils::init "$0"
 #fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew install intellij-idea
+    brew install --cask intellij-idea
 fi

@@ -14,5 +14,5 @@ if [[ "${distro}" == Ubuntu* ]]; then
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew install sublime-text
+    brew install --cask sublime-text
 fi

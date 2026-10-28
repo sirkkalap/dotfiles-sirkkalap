@@ -5,10 +5,10 @@ install_utils::init "$0"
 
 
 if [[ "${distro}" == Ubuntu* ]]; then
-    echo "Sorry, I do not know how to install dragscroll on Ubuntu yet..."
+    echo "Sorry, I do not know how to install dragscroll on Ubuntu yet."
     exit 1
 fi
 
 if [[ "${distro}" == darwin ]]; then
-    brew install dragscroll
+    brew install --cask dragscroll
 fi

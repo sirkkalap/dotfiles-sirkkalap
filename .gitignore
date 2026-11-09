@@ -1,6 +1,53 @@
+# Editors and operating system files
 .idea/
-R/.Rhistory
-**/.DS_Store
-mdp/
-/dotfiles-sirkkalap.iml
+*.iml
+.DS_Store
+._*
+*~
+*.swp
+*.swo
 
+# Local secrets and machine-specific overrides
+.env
+.env.*
+!.env.example
+!.env.sample
+*.local.sh
+*.local.conf
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_dsa
+id_dsa.*
+id_ecdsa
+id_ecdsa.*
+id_ed25519
+id_ed25519.*
+credentials.json
+service-account*.json
+.netrc
+.npmrc
+.pypirc
+
+# Shell and application history
+.zsh_history
+.bash_history
+.Rhistory
+*.Rhistory
+
+# Archives and local backups
+*.bundle
+*.bak
+*.backup
+
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Downloaded build trees
+/mdp/

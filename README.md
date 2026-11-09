@@ -15,7 +15,7 @@ Local configuration
 -------------------
 Keep credentials and machine-specific settings outside this repository.
 Set your Git email in private configuration or for each repository with
-`git config user.email "you@example.com"`. The identity helper does not set email.
+`git config user.email "you@example.com"`.
 
 The ignore rules cover common secret files, histories and Git bundle backups.
 They do not remove files already tracked or erase Git history. Inspect staged

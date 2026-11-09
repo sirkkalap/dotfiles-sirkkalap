@@ -36,13 +36,7 @@ ln -s -f ${WORK}/dotfiles-sirkkalap/install_utils.sh ~/bin/
 if [[ ${DISTRO} == centos* ]]; then
     require git 'sudo yum -y install git'
     require vim 'sudo yum -y install vim-enhanced'
-    require zsh 'sudo yum -y install ncurses-devel &&\
-                 wget -O- http://sourceforge.net/projects/zsh/files/zsh/5.0.2/zsh-5.0.2.tar.bz2/download\
-                 | tar jxf - &&\
-                 cd zsh-5.0.2 &&\
-                 ./configure && \
-                 make &&\
-                 sudo make install'
+    require zsh 'sudo yum -y install zsh'
 fi
 
 if [[ ${DISTRO} == Ubuntu* ]]; then
